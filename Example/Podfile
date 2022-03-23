@@ -1,0 +1,22 @@
+source 'https://github.com/CocoaPods/Specs.git'
+#source 'https://gitee.com/liangyujuan/kykj-hospital-custom-im-sdkspec.git'
+
+use_frameworks!
+#inhibit_all_warnings!
+#use_modular_headers!
+
+platform :ios, '10.0'
+
+target 'KykjHospitalCustomImSDK_Example' do
+  pod 'KykjHospitalCustomImSDK', :path => '../KykjHospitalCustomImSDK.podspec'
+
+#  pod 'KykjHospitalCustomImSDK', :git => 'https://gitee.com/liangyujuan/kykj-hospital-custom-im-sdk' , :tag => '1.0.0'
+
+#pod 'KykjHospitalCustomImSDK', '~> 1.0.0'
+
+  target 'KykjHospitalCustomImSDK_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
