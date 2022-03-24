@@ -21,6 +21,9 @@
 #import "TRTCCalling.h"
 #import "MJExtension.h"
 
+#import "TYMemberModel.h"
+
+
 @import TXLiteAVSDK_TRTC;
 @import ImSDK;
 //@import RongIMK

@@ -8,17 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-#import "HOIMConsultMsgExtraModel.h"
-#import "TYMemberModel.h"
-#import "Factory.h"
-
 
 //@import TXLiteAVSDK_TRTC;
 //@import ImSDK;
 ////@import RongIMKit;
 //@import RongIMLib;
 
-@class YXPatientRecordsModel,YXOrderRecordModel;
+@class YXPatientRecordsModel,YXOrderRecordModel,TYMemberModel;
 @interface HOIMHelper : NSObject
 
 ///音视频sig

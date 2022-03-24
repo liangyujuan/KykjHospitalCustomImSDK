@@ -9,7 +9,7 @@
 #import "KYKJAppDelegate.h"
 #import "HOIMHelper.h"
 #import "TYMemberSearchViewController.h"
-#import "BaseNavigationController.h"
+//#import "BaseNavigationController.h"
 
 @implementation KYKJAppDelegate
 
