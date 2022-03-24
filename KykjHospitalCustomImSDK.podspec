@@ -31,16 +31,16 @@ Pod::Spec.new do |s|
 
   s.source_files = 'KykjHospitalCustomImSDK/Classes/**/*.{h,m}'
   
-#   s.resource_bundles = {
-#     'KykjHospitalCustomImSDK' => ['KykjHospitalCustomImSDK/Assets/*.{png,xib}']
-#   }
+   s.resource_bundles = {
+     'KykjHospitalCustomImSDK' => ['KykjHospitalCustomImSDK/Assets/*.{png,xib}']
+   }
 
 
 #s.resource_bundles = {
 #  'KykjHospitalCustomImSDK' => ['KykjHospitalCustomImSDK/KykjHospitalCustomImSDK.bundle']
 #}
 
-#s.public_header_files = 'KykjHospitalCustomImSDK/Classes/HOIMHelper.h'
+s.public_header_files = 'KykjHospitalCustomImSDK/Classes/*.h'
 
 #   s.public_header_files = 'Pod/Classes/**/*.h'
    
