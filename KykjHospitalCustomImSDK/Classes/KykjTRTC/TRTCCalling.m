@@ -9,6 +9,7 @@
 #import "TRTCCallingUtils.h"
 #import "TRTCCalling+Signal.h"
 #import "TRTCCallingHeader.h"
+#import "LeafNotification.h"
 
 @interface TRTCCalling ()
 
@@ -44,12 +45,14 @@
         self.curRespList = [NSMutableArray array];
         self.curRoomList = [NSMutableArray array];
         [self addSignalListener];
+        [self addSimpleMsgListener];
     }
     return self;
 }
 
 - (void)dealloc {
     [self removeSignalListener];
+    [self removeSimpleMsgListener];
 }
 
 - (void)addDelegate:(id<TRTCCallingDelegate>)delegate {
@@ -62,6 +65,7 @@
     self.mUserSig = userSig;
     [[V2TIMManager sharedInstance] initSDK:sdkAppID config:nil listener:nil];
     [self addSignalListener];
+    [self addSimpleMsgListener];
     if ([[[V2TIMManager sharedInstance] getLoginUser] isEqualToString:userID]) {
         if (success) {
             success();
@@ -103,6 +107,7 @@
     self.mUserSig = nil;
     self.mSDKAppID = 0;
     [self removeSignalListener];
+    [self removeSimpleMsgListener];
     [[V2TIMManager sharedInstance] logout:^{
         if (success) {
             success();
@@ -435,6 +440,24 @@
                 [self.delegate onUserVoiceVolume:[TRTCCallingUtils loginUser] volume:(UInt32)info.volume];
             }
         }
+    }
+}
+
+#pragma mark - V2TIMSimpleMsgListener
+/// 收到 C2C 文本消息
+- (void)onRecvC2CTextMessage:(NSString *)msgID sender:(V2TIMUserInfo *)info text:(NSString *)text{
+
+    [LeafNotification showInController:[UIApplication sharedApplication].delegate.window.rootViewController withText:@"收到 C2C 文本消息"];
+    if ([self.delegate respondsToSelector:@selector(onRecvC2CTextMessage:sendUserId:text:)]) {
+        [self.delegate onRecvC2CTextMessage:msgID sendUserId:info.userID text:text];
+    }
+}
+
+/// 收到 C2C 自定义（信令）消息
+- (void)onRecvC2CCustomMessage:(NSString *)msgID sender:(V2TIMUserInfo *)info customData:(NSData *)data{
+
+    if ([self.delegate respondsToSelector:@selector(onRecvC2CCustomMessage:sendUserId:customData:)]) {
+        [self.delegate onRecvC2CCustomMessage:msgID sendUserId:info.userID customData:data];
     }
 }
 

@@ -356,7 +356,8 @@
  */
 - (void)leftBarButtonItemPressed:(id)sender{
 
-    [self requestGetMcDzByDzId:self.orderRecordModel.DZ_ID];
+//    [self requestGetMcDzByDzId:self.orderRecordModel.DZ_ID];
+    [self popTargetViewController];
    
 }
 
@@ -606,6 +607,7 @@
     self.kyVideoVC = nil;
     if ([type isEqualToString:@"2"]) {
         [self requestUpadateVideoInfoFunction:@"userLeft"];
+        [self requestGetMcDzByDzId:self.orderRecordModel.DZ_ID];
     }
 //    if ([_orderRecordModel.STATUS isEqualToString:@"D"]) {
 //        [self requestEndStatus:NO];
@@ -655,7 +657,7 @@
 
 - (void)requestEndStatus:(BOOL)isPop{
     NSMutableDictionary *tempDict = [NSMutableDictionary dictionary];
-    [tempDict setObject:@"endStatus" forKey:@"method"];
+    [tempDict setObject:@"tyCancelStatus" forKey:@"method"];
     [tempDict setObject:self.orderRecordModel.DZ_ID forKey:@"dzId"];
     [tempDict setObject:@"dzService" forKey:@"service"];
     
@@ -675,7 +677,7 @@
             if (isPop) {
                 [weakself popTargetViewController];
             }else{
-                [weakself requestGetMcDz:YES];
+                [weakself.navigationController popViewControllerAnimated:NO];
             }
             
             
@@ -760,6 +762,7 @@
 
 
 #pragma mark -- NET
+
 - (void)requestGetMcDzByDzId:(NSString*)dzId{
     
 //    MBProgressHUDShowInThisView;
@@ -789,23 +792,32 @@
                 
                 if (!self.orderRecordModel || ![self.orderRecordModel isEqualWithOrderRecord:arrayTemp[0]]) {
                     self.orderRecordModel = arrayTemp[0];
-                    if ([self.orderRecordModel.STATUS isEqualToString:@"C"] || [self.orderRecordModel.STATUS isEqualToString:@"D"]) {
-                        [LYJAlertView showConfirmAlertWithContent:@"退出后，将结束与医生问诊，确认退出？" confirmAction:^{
-                            if (self.kyVideoVC!=nil) {
-                                [self hungUpDelegateActionWithType:@"2"];
-                            }
-                            
-                            [self requestEndStatus:YES];
-                        } cancleAction:^(id  _Nonnull obj) {
-                            
-                        }];
+                    if ([self.orderRecordModel.STATUS isEqualToString:@"D"]) {
+//                        [LYJAlertView showConfirmAlertWithContent:@"退出后，将结束与医生问诊，确认退出？" confirmAction:^{
+//                            if (self.kyVideoVC!=nil) {
+//                                [self hungUpDelegateActionWithType:@"2"];
+//                            }
+//
+//                            [self requestEndStatus:YES];
+//                        } cancleAction:^(id  _Nonnull obj) {
+//
+//                        }];
+                        
+//                        if (self.kyVideoVC!=nil) {
+//                            [self hungUpDelegateActionWithType:@"2"];
+//                        }
+                        
+                        [self requestEndStatus:NO];
+                        
                     }else{
                         if (self.kyVideoVC!=nil) {
-                            [self hungUpDelegateActionWithType:@"2"];
+                    //        [self.kyVideoVC.trtcCloud stopLocalPreview];
+                    //        [self.kyVideoVC.trtcCloud exitRoom];
+                            [self.kyVideoVC stopAndQuit];
                         }
-
-//                        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:2] animated:YES];
-                        [self popTargetViewController];
+                        [self.kyVideoVC.view removeFromSuperview];
+                        [self.kyVideoVC removeFromParentViewController];
+                        self.kyVideoVC = nil;
                     }
                 }
                 

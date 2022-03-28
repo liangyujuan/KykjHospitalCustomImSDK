@@ -40,6 +40,7 @@
     [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     [IQKeyboardManager sharedManager].enable = NO;
+    [self setupNav];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -63,7 +64,7 @@
     self.navigationController.navigationBar.translucent = NO;
     self.view.backgroundColor = colorBackground;
     
-    [self setupNav];
+    
     
 //    self.edgesForExtendedLayout = UIRectEdgeNone;
 //
@@ -78,7 +79,7 @@
     [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view);
 //            make.bottom.equalTo(self.bottomListView.mas_top);
-        make.bottom.equalTo(self.chatSessionInputBarControl.inputTextView.mas_top).mas_offset(-80);
+        make.bottom.equalTo(self.chatSessionInputBarControl.inputTextView.mas_top).mas_offset(-160);
         make.left.right.equalTo(self.view);
     }];
    
@@ -180,12 +181,13 @@
         make.right.equalTo(self.view).mas_offset(-15);
     }];
     
+    
     NSMutableAttributedString *attStr1 = [[NSMutableAttributedString alloc] initWithString:@"可用次数" attributes:@{NSForegroundColorAttributeName:RGB(102, 102, 102),NSFontAttributeName:[UIFont boldSystemFontOfSize:15]}];
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc]init];
   
     [attStr1 addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0,[attStr1 length])];
     
-    NSMutableAttributedString *attStr2 = [[NSMutableAttributedString alloc] initWithString:_model.countLeft attributes:@{NSForegroundColorAttributeName:RGB(1, 111, 255),NSFontAttributeName:[UIFont boldSystemFontOfSize:25]}];
+    NSMutableAttributedString *attStr2 = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d",_model.countLeft.intValue] attributes:@{NSForegroundColorAttributeName:RGB(1, 111, 255),NSFontAttributeName:[UIFont boldSystemFontOfSize:25]}];
     NSMutableParagraphStyle *style2 = [[NSMutableParagraphStyle alloc]init];
   
     [attStr2 addAttribute:NSParagraphStyleAttributeName value:style2 range:NSMakeRange(0,[attStr2 length])];
@@ -209,6 +211,14 @@
     
     
     [self.chatSessionInputBarControl setHidden:YES];
+    
+    if (_model.countLeft.intValue>0) {
+        videoButton.enabled = YES;
+        videoButton.backgroundColor = RGB(1, 111, 255);
+    }else{
+        videoButton.enabled = NO;
+        videoButton.backgroundColor = RGB(205, 205, 205);
+    }
 }
 
 - (void)didTapMessageCell:(RCMessageModel *)model{
@@ -572,6 +582,20 @@
      } failure:^(NSError *error) {
          
      }];
+}
+
+#pragma mark - TRTCCallingDelegate
+
+- (void)onRecvC2CTextMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId text:(NSString *)text
+{
+    [LeafNotification showInController:self withText:@"videoing ===== onRecvC2CTextMessage"];
+    if ([text isEqualToString:@"医生忙碌中，请重新发起视频"]) {
+//        [self hungUpAction];
+    }
+}
+- (void)onRecvC2CCustomMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId customData:(NSData *)data
+{
+    
 }
 
 /*

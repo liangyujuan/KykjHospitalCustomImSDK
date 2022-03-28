@@ -223,7 +223,7 @@
     _userSexLabel.text = [_model.gender isEqualToString:@"1"] ? @"男" : @"女";
     NSString *age = [KykjImToolkit getIdentityCardAge:_model.idCard].length>0 ? [NSString stringWithFormat:@"%@岁",[KykjImToolkit getIdentityCardAge:_model.idCard]] : @"";
     _userAgeLabel.text = age;
-    _countLabel.text = [NSString stringWithFormat:@"问诊可用次数：%@",_model.countLeft];
+    _countLabel.text = [NSString stringWithFormat:@"问诊可用次数：%d",_model.countLeft.intValue];
     
 
     

@@ -205,10 +205,19 @@ return result;
 
 + (BOOL)checkTelephone:(NSString *)telephone
 {
-    NSString *pattern = @"^1+[0-9]{10}";
-    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
-    BOOL isMatch = [pred evaluateWithObject:telephone];
-    return isMatch;
+//    NSString *pattern = @"^1+[0-9]{10}";
+//    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
+//    BOOL isMatch = [pred evaluateWithObject:telephone];
+//    return isMatch;
+    
+    if (telephone.length == 0)
+        return NO;
+    NSString *phoneRegex = @"1[3456789]([0-9]){9}";
+        NSPredicate *phoneTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", phoneRegex];
+        return [phoneTest evaluateWithObject:telephone];
+//    NSString *Regex =@"(13[0-9]|14[57]|15[012356789]|18[02356789])\\d{8}";
+//    NSPredicate *mobileTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", Regex];
+//    return [mobileTest evaluateWithObject:telephone];
 }
 
 + (void)checkLibraryAuthorityWithCallBack:(AuthorizationStatusCallBack)callback

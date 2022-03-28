@@ -16,6 +16,8 @@
 
 @property (nonatomic, strong) UITextField *textfield;
 
+@property (nonatomic, strong) UIButton *searchButton;
+
 @property (nonatomic, strong) TYMemberModel *model;
 
 @end
@@ -88,11 +90,11 @@
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
     
-    UIButton *searchButton = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
+    _searchButton = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
         make.titleForState(@"搜索",UIControlStateNormal).titleFont([UIFont systemFontOfSize:18]).titleColorForState([UIColor whiteColor],UIControlStateNormal).backgroundColor(RGB(1, 111, 255)).addAction(self,@selector(searchAction),UIControlEventTouchUpInside).addToSuperView(self.view);
     }];
-    searchButton.layer.cornerRadius = 10.f;
-    [searchButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    _searchButton.layer.cornerRadius = 10.f;
+    [_searchButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.view).mas_offset(15);
         make.bottom.equalTo(self.view).mas_offset(-15-insets.bottom);
         make.right.equalTo(self.view).mas_offset(-15);
@@ -106,7 +108,7 @@
     [bgView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.equalTo(self.view).mas_offset(15);
         make.right.equalTo(self.view).mas_offset(-15);
-        make.bottom.equalTo(searchButton.mas_top).mas_offset(-15);
+        make.bottom.equalTo(self.searchButton.mas_top).mas_offset(-15);
     }];
     
     UILabel *titleLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
@@ -150,6 +152,7 @@
         [LeafNotification showInController:[KykjImToolkit getCurrentVC] withText:@"请输入正确的手机号"];
         return;
     }
+    _searchButton.enabled = NO;
     [self requestMemberWithSearchString:_textfield.text];
     
 }
@@ -203,20 +206,26 @@
     [param setObject:@"searchUserInfo" forKey:@"method"];
     [param setObject:searhString forKey:@"homeTel"];
     
-    
+    @weakify(self)
     [HttpOperationManager HTTP_POSTWithParameters:param showAlert:NO success:^(id responseObject) {
-      
-
+      @strongify(self)
+        self.searchButton.enabled = YES;
         if (responseObject!=nil) {
 
 //            system.TOKEN = getSafeString(responseObject[@"token"]);
             if ([responseObject[@"result"] isEqualToString:@"success"]) {
                 TYMemberModel *temp = [[TYMemberModel alloc] init];
-                temp = [temp mj_setKeyValues:responseObject[@"rows"]];
-                TYMemberSearchDetailViewController *vc = [[TYMemberSearchDetailViewController alloc] init];
-                vc.model = temp;
-//                vc.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:vc animated:YES];
+                if (responseObject[@"rows"] != nil) {
+                    temp = [temp mj_setKeyValues:responseObject[@"rows"]];
+                    
+                    TYMemberSearchDetailViewController *vc = [[TYMemberSearchDetailViewController alloc] init];
+                    vc.model = temp;
+    //                vc.hidesBottomBarWhenPushed = YES;
+                    [self.navigationController pushViewController:vc animated:YES];
+                }
+                else{
+                    [LeafNotification showInController:self withText:@"未查询到会员信息！"];
+                }
             }else{
                 NSString *msgString = getSafeString(responseObject[@"info"]);
                 if (msgString.length > 0) {
@@ -229,8 +238,8 @@
         }
     } failure:^(NSError *error) {
         NSLog(@"error:%@",error.userInfo);
-  
-        [LeafNotification showInController:[KykjImToolkit getCurrentVC] withText:error.userInfo];
+        self.searchButton.enabled = YES;
+        [LeafNotification showInController:self withText:error.userInfo];
     }];
 }
 

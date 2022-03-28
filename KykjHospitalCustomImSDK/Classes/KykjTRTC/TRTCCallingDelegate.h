@@ -95,6 +95,11 @@ NS_SWIFT_NAME(onCallingCancel(uid:));
 /// 通话结束 | end callback
 -(void)onCallEnd;
 
+-(void)onRecvC2CTextMessage:(NSString *)msgID sendUserId:(NSString*)sendUserId text:(NSString *)text;
+
+/// 收到 C2C 自定义（信令）消息
+-(void)onRecvC2CCustomMessage:(NSString *)msgID sendUserId:(NSString*)sendUserId customData:(NSData *)data;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -11,12 +11,20 @@
 #import "KyVideoRenderCollectionViewCell.h"
 #import "Factory.h"
 
+#import <ImSDK/V2TIMManager.h>
+#import <ImSDK/V2TIMManager+Signaling.h>
+
+#import "TRTCCallingUtils.h"
+#import "TRTCCallingHeader.h"
+#import "TRTCCalling.h"
+//#import "TRTCCallingDelegate.h"
+#import "TRTCCalling+Signal.h"
 
 @import TXLiteAVSDK_TRTC;
 
 static const NSInteger maxRemoteUserNum = 9;
 
-@interface KYTRTCVideoCallingViewController ()<TRTCCloudDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
+@interface KYTRTCVideoCallingViewController ()<TRTCCloudDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,TRTCCallingDelegate>
 
 @property (assign, nonatomic) UInt32 roomId;
 @property (strong, nonatomic) NSString* userId;
@@ -42,9 +50,18 @@ static const NSInteger maxRemoteUserNum = 9;
 
 @implementation KYTRTCVideoCallingViewController
 
+//- (void)addSimpleMsgListener{
+//    [[V2TIMManager sharedInstance] addSimpleMsgListener:self];
+//}
+//
+//- (void)removeSimpleMsgListener {
+//    [[V2TIMManager sharedInstance] removeSimpleMsgListener:self];
+//}
+
 - (TRTCCloud*)trtcCloud {
     if (!_trtcCloud) {
         _trtcCloud = [TRTCCloud sharedInstance];
+//        [self addSimpleMsgListener];
     }
     return _trtcCloud;
 }
@@ -75,6 +92,12 @@ static const NSInteger maxRemoteUserNum = 9;
         _roomId = roomId;
         _userId = userId;
         _showUserArray = [NSMutableArray array];
+        
+        [[TRTCCalling shareInstance] addDelegate:self];
+//        [[TRTCCalling shareInstance] addSimpleMsgListener];
+        
+        
+
     }
     return  self;
 }
@@ -195,7 +218,7 @@ static const NSInteger maxRemoteUserNum = 9;
     }];
     
     _waiteTimeLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.text(@"已等待0分钟").textAlignment(NSTextAlignmentCenter).textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont systemFontOfSize:18]).addToSuperView(self.callWaitingView);
+        make.text(@"已等待1秒钟").textAlignment(NSTextAlignmentCenter).textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont systemFontOfSize:18]).addToSuperView(self.callWaitingView);
     }];
     [_waiteTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
@@ -204,7 +227,7 @@ static const NSInteger maxRemoteUserNum = 9;
     }];
     
     _waiteCountLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.text(@"前面排队还有0人").textAlignment(NSTextAlignmentLeft).textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont systemFontOfSize:18]).addToSuperView(self.callWaitingView);
+        make.text(@"").textAlignment(NSTextAlignmentLeft).textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont systemFontOfSize:18]).addToSuperView(self.callWaitingView);
     }];
     [_waiteCountLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
@@ -271,6 +294,8 @@ static const NSInteger maxRemoteUserNum = 9;
 - (void)dealloc {
     [self.trtcCloud exitRoom];
     [TRTCCloud destroySharedIntance];
+    
+//    [self removeSimpleMsgListener];
 }
 //患者挂断
 - (void)hungUpAction
@@ -284,6 +309,8 @@ static const NSInteger maxRemoteUserNum = 9;
     if ([self.delegate respondsToSelector:@selector(hungUpDelegateActionWithType:)]) {
         [_trtcCloud stopLocalPreview];
         [_trtcCloud exitRoom];
+        [TRTCCloud destroySharedIntance];
+//        [self removeSimpleMsgListener];
         [self.delegate hungUpDelegateActionWithType:@"2"];
     }
     
@@ -300,6 +327,8 @@ static const NSInteger maxRemoteUserNum = 9;
     if ([self.delegate respondsToSelector:@selector(hungUpDelegateActionWithType:)]) {
         [_trtcCloud stopLocalPreview];
         [_trtcCloud exitRoom];
+        [TRTCCloud destroySharedIntance];
+//        [self removeSimpleMsgListener];
         [self.delegate hungUpDelegateActionWithType:@"2"];
     }
     
@@ -549,21 +578,34 @@ static const NSInteger maxRemoteUserNum = 9;
 //            system.TOKEN = getSafeString(responseObject[@"token"]);
             if ([responseObject[@"result"] isEqualToString:@"success"]) {
                 if (responseObject[@"count"]!=nil) {
-                    self.waiteCountLabel.text = [NSString stringWithFormat:@"前面排队还有%@人",responseObject[@"count"]];
+                    
                     if ([responseObject[@"count"] intValue] <=0) {
+                        self.waiteCountLabel.text = @"";
                         self.waiteCountLabel.hidden = YES;
                         [self.waiteTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
                             make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
                             make.centerX.equalTo(self.callWaitingView);
                         }];
                     }else{
+                        
+                        self.waiteCountLabel.text = [NSString stringWithFormat:@"前面排队还有%@人",responseObject[@"count"]];
                         self.waiteCountLabel.hidden = NO;
+                        [self.waiteTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                            make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
+                            make.left.equalTo(self.callWaitingView).mas_offset(15);
+                        }];
                         
                     }
                 }
                 
                 
             }else{
+                self.waiteCountLabel.text = @"";
+                self.waiteCountLabel.hidden = YES;
+                [self.waiteTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+                    make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
+                    make.centerX.equalTo(self.callWaitingView);
+                }];
                 NSString *msgString = getSafeString(responseObject[@"info"]);
                 if (msgString.length > 0) {
                     [LeafNotification showInController:self withText:msgString];
@@ -594,7 +636,39 @@ static const NSInteger maxRemoteUserNum = 9;
 {
     [self.trtcCloud stopLocalPreview];
     [self.trtcCloud exitRoom];
+    [TRTCCloud destroySharedIntance];
+//    [self removeSimpleMsgListener];
 }
+
+//#pragma mark - V2TIMSimpleMsgListener
+///// 收到 C2C 文本消息
+//- (void)onRecvC2CTextMessage:(NSString *)msgID sender:(V2TIMUserInfo *)info text:(NSString *)text{
+//
+//    [LeafNotification showInController:[UIApplication sharedApplication].delegate.window.rootViewController withText:@"收到 C2C 文本消息"];
+//
+//}
+//
+///// 收到 C2C 自定义（信令）消息
+//- (void)onRecvC2CCustomMessage:(NSString *)msgID sender:(V2TIMUserInfo *)info customData:(NSData *)data{
+//
+//
+//}
+
+#pragma mark - TRTCCallingDelegate
+
+- (void)onRecvC2CTextMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId text:(NSString *)text
+{
+    [LeafNotification showInController:self withText:@"医生忙碌中，请重新发起视频"];
+    if ([text isEqualToString:@"医生忙碌中，请重新发起视频"]) {
+        [self hungUpAction];
+    }
+}
+- (void)onRecvC2CCustomMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId customData:(NSData *)data
+{
+    
+}
+
+
 /*
 #pragma mark - Navigation
 

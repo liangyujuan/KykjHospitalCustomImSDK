@@ -15,6 +15,10 @@
 
 ///移除信令监听
 - (void)removeSignalListener;
+///添加消息监听
+- (void)addSimpleMsgListener;
+///移除消息监听
+- (void)removeSimpleMsgListener;
 
 ///通过信令发起通话邀请
 - (NSString *)invite:(NSString *)receiver action:(CallAction)action model:(CallModel *)model;
@@ -50,6 +54,11 @@
 - (void)enterRoom;
 
 - (void)quitRoom;
+
+- (void)onRecvC2CTextMessage:(NSString *)msgID sendUserId:(NSString*)sendUserId text:(NSString *)text;
+
+/// 收到 C2C 自定义（信令）消息
+- (void)onRecvC2CCustomMessage:(NSString *)msgID sendUserId:(NSString*)sendUserId customData:(NSData *)data;
 
 @end
 

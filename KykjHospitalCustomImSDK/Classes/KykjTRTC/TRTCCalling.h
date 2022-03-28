@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void(^CallingActionCallback)(void);
 typedef void(^ErrorCallback)(int code, NSString *des);
 
-@interface TRTCCalling : NSObject<TRTCCloudDelegate,V2TIMSignalingListener>
+@interface TRTCCalling : NSObject<TRTCCloudDelegate,V2TIMSignalingListener,V2TIMSimpleMsgListener>
 
 /// IM APNS推送ID
 @property (nonatomic, assign) int imBusinessID;

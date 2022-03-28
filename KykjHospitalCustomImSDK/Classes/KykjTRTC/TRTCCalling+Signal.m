@@ -20,6 +20,13 @@
 - (void)removeSignalListener {
     [[V2TIMManager sharedInstance] removeSignalingListener:self];
 }
+- (void)addSimpleMsgListener{
+    [[V2TIMManager sharedInstance] addSimpleMsgListener:self];
+}
+
+- (void)removeSimpleMsgListener {
+    [[V2TIMManager sharedInstance] removeSimpleMsgListener:self];
+}
 
 - (NSString *)invite:(NSString *)receiver action:(CallAction)action model:(CallModel *)model {
     NSString *callID = @"";
@@ -232,6 +239,23 @@
         }];
     }
 }
+
+#pragma mark - V2TIMSimpleMsgListener
+
+- (void)onRecvC2CTextMessage:(NSString *)msgID sender:(V2TIMUserInfo *)info text:(NSString *)text{
+    if ([self canDelegateRespondMethod:@selector(onRecvC2CTextMessage:sendUserId:text:)]) {
+        [self.delegate onRecvC2CTextMessage:msgID sendUserId:info.userID text:text];
+    }
+}
+
+/// 收到 C2C 自定义（信令）消息
+- (void)onRecvC2CCustomMessage:(NSString *)msgID sender:(V2TIMUserInfo *)info customData:(NSData *)data{
+    if ([self canDelegateRespondMethod:@selector(onRecvC2CCustomMessage:sendUserId:customData:)]) {
+        [self.delegate onRecvC2CCustomMessage:msgID sendUserId:info.userID customData:data];
+    }
+}
+
+
 
 #pragma mark V2TIMSignalingListener
 
@@ -477,5 +501,23 @@
 - (BOOL)canDelegateRespondMethod:(SEL)selector {
     return self.delegate && [self.delegate respondsToSelector:selector];
 }
+
+
+#pragma mark - V2TIMSimpleMsgListener
+///// 收到 C2C 文本消息
+//- (void)onRecvC2CTextMessage:(NSString *)msgID  sender:(V2TIMUserInfo *)info text:(NSString *)text{
+//
+//    if ([self.delegate respondsToSelector:@selector(onRecvC2CTextMessage:sendUserId:text:)]) {
+//        [self.delegate onRecvC2CTextMessage:msgID sendUserId:info.userID text:text];
+//    }
+//}
+//
+///// 收到 C2C 自定义（信令）消息
+//- (void)onRecvC2CCustomMessage:(NSString *)msgID  sender:(V2TIMUserInfo *)info customData:(NSData *)data{
+//
+//    if ([self.delegate respondsToSelector:@selector(onRecvC2CCustomMessage:sendUserId:customData:)]) {
+//        [self.delegate onRecvC2CCustomMessage:msgID sendUserId:info.userID customData:data];
+//    }
+//}
 
 @end
