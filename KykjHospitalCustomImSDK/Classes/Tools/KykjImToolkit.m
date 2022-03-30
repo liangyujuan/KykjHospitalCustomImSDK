@@ -220,6 +220,39 @@ return result;
 //    return [mobileTest evaluateWithObject:telephone];
 }
 
++ (void)checkMustLibraryAuthorityWithCallBack:(AuthorizationStatusCallBack)callback
+{
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        switch (status)
+        {
+            case PHAuthorizationStatusNotDetermined: break;
+            case PHAuthorizationStatusRestricted:
+            case PHAuthorizationStatusDenied:
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"权限受限" message:@"当前操作需要开启相册权限，请到设置页面开启" preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *set = [UIAlertAction actionWithTitle:@"去设置" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+                    }];
+//                    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleCancel handler:nil];
+                    [alert addAction:set];
+//                    [alert addAction:cancel];
+                    [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:YES completion:nil];
+                });
+            }
+                break;
+            case PHAuthorizationStatusAuthorized:
+            {
+                if (callback)
+                {
+                    callback();
+                }
+            }
+                break;
+        }
+    }];
+}
+
 + (void)checkLibraryAuthorityWithCallBack:(AuthorizationStatusCallBack)callback
 {
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {

@@ -38,6 +38,8 @@ static const NSInteger maxRemoteUserNum = 9;
 
 @property (nonatomic, strong) UIView *centerTempView;
 
+@property (nonatomic, strong) UILabel *callingTimeLabel;
+
 @property (nonatomic, strong) UILabel *waiteTimeLabel;
 
 @property (nonatomic, strong) UILabel *waitTitleLabel;
@@ -46,7 +48,12 @@ static const NSInteger maxRemoteUserNum = 9;
 @property (nonatomic, strong) UILabel *doctorNameLabel;
 
 @property (nonatomic, strong) NSTimer *timer;
+
+@property (nonatomic, strong) NSTimer *callTimeTimer;
+
 @property (nonatomic, assign) NSInteger timeCount;
+
+@property (nonatomic, assign) NSInteger callTimeCount;
 
 @end
 
@@ -167,6 +174,16 @@ static const NSInteger maxRemoteUserNum = 9;
     }];
     
     _minimizeButton.selected = NO;
+    
+    
+    _callingTimeLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
+        make.text(@"00:01").textAlignment(NSTextAlignmentCenter).textColor([UIColor whiteColor]).font([UIFont boldSystemFontOfSize:20]).addToSuperView(self.view);
+    }];
+    [_callingTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(self.minimizeButton);
+        make.centerX.equalTo(self.view);
+//        make.right.equalTo(self.callWaitingView).mas_offset(-15);
+    }];
     
     _hungUpButton = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
         make.imageForState([KykjImToolkit getImageResourceForName:@"calling_ic_hangup"],UIControlStateNormal).addAction(self,@selector(hungUpAction),UIControlEventTouchUpInside).addToSuperView(self.view);
@@ -305,6 +322,15 @@ static const NSInteger maxRemoteUserNum = 9;
 - (void)dealloc {
     [self.trtcCloud exitRoom];
     [TRTCCloud destroySharedIntance];
+    
+    if (_timer) {
+        [_timer invalidate];
+        _timer = nil;
+    }
+    if (_callTimeTimer) {
+        [_callTimeTimer invalidate];
+        _callTimeTimer = nil;
+    }
     
 //    [self removeSimpleMsgListener];
 }
@@ -470,6 +496,9 @@ static const NSInteger maxRemoteUserNum = 9;
         [LeafNotification showHint:@"医生已经进入视频" yOffset:100];
         [_timer invalidate];
         _timer = nil;
+        
+        [self.callTimeTimer fire];
+        
         if (self.remoteUidSet.count>1) {
             _callWaitingView.hidden = YES;
         }
@@ -499,6 +528,17 @@ static const NSInteger maxRemoteUserNum = 9;
 //    [self refreshRemoteVideoViews];
 }
 
+- (void)onError:(TXLiteAVError)errCode errMsg:(nullable NSString *)errMsg
+        extInfo:(nullable NSDictionary*)extInfo {
+//    self.curLastModel.code = errCode;
+    if ([self.delegate respondsToSelector:@selector(hungUpDelegateActionWithType:)]) {
+        [_trtcCloud stopLocalPreview];
+        [_trtcCloud exitRoom];
+        [TRTCCloud destroySharedIntance];
+        [self.delegate hungUpDelegateActionWithType:@"2"];
+    }
+//    [self hangup];
+}
 - (void)refreshRemoteVideoViews {
 //    NSInteger index = 0;
 //    for (NSString* userId in _remoteUidSet) {
@@ -571,6 +611,19 @@ static const NSInteger maxRemoteUserNum = 9;
        
     }
 }
+
+- (void)callTimeTimerFired:(NSTimer *)timer
+{
+    _callTimeCount++;
+    if (_callTimeCount<60 && _callTimeCount>0) {
+        _callingTimeLabel.text = [NSString stringWithFormat:@"00:%02d",(int)(_callTimeCount)];
+    }
+    else{
+        _callingTimeLabel.text = [NSString stringWithFormat:@"%02d:%02d",(int)(_callTimeCount/60),(int)(_callTimeCount%60)];
+    }
+   
+}
+
 - (void)timeEnd{
     [self hungUpAction];
     [_timer invalidate];
@@ -582,10 +635,24 @@ static const NSInteger maxRemoteUserNum = 9;
 {
     if (!_timer)
     {
-        _timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
+//        _timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
+        
+        _timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
+        [[NSRunLoop mainRunLoop] addTimer:_timer forMode:NSRunLoopCommonModes];
+        
         _timeCount = 299;
     }
     return _timer;
+}
+- (NSTimer *)callTimeTimer
+{
+    if (!_callTimeTimer) {
+        _callTimeTimer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(callTimeTimerFired:) userInfo:nil repeats:YES];
+        [[NSRunLoop mainRunLoop] addTimer:_callTimeTimer forMode:NSRunLoopCommonModes];
+        _callTimeCount = 1;
+    }
+    
+    return _callTimeTimer;
 }
 
 - (void)stopAndQuit

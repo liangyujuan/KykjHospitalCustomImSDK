@@ -105,7 +105,7 @@ static LYJAlertView *_alertView;
        
         make.width.mas_equalTo(100);
         make.height.mas_equalTo(34.5f);
-        make.top.equalTo(contentLabel.mas_bottom).mas_offset(40);
+        make.top.equalTo(contentLabel.mas_bottom).mas_offset(30);
         make.bottom.equalTo(self.alert).mas_offset(-30);
         make.left.equalTo(self.alert).mas_offset(30);
     }];
@@ -116,6 +116,7 @@ static LYJAlertView *_alertView;
     cancel.layer.cornerRadius = 15.f;
     cancel.clipsToBounds = YES;
     [cancel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(contentLabel.mas_bottom).mas_offset(30);
         make.width.mas_equalTo(100);
         make.height.mas_equalTo(34.5f);
         make.bottom.equalTo(self.alert).mas_offset(-30);

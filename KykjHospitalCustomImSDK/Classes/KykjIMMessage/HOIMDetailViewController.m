@@ -19,6 +19,7 @@
 #import "TYHistoryReportListViewController.h"
 #import "TYReportDetailViewController.h"
 #import "TYMemberSearchDetailViewController.h"
+#import "HOIMGroupDetailViewController.h"
 #import "Factory.h"
 #import "MJExtension.h"
 
@@ -83,10 +84,11 @@
     
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshRCKitDispatchMessageNotification:) name:RCKitDispatchMessageNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pictureAllow:) name:@"appRefreshLocation" object:nil];
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCallEnd) name:kIMStatusChangeDrops object:nil];
 
     
-    [KykjImToolkit checkLibraryAuthorityWithCallBack:^{
+    [KykjImToolkit checkMustLibraryAuthorityWithCallBack:^{
 
     }];
 
@@ -115,7 +117,7 @@
 - (void)pictureAllow:(NSNotification*)noti
 {
 //    if (@available(iOS 15.2, *)) {
-        [KykjImToolkit checkLibraryAuthorityWithCallBack:^{
+        [KykjImToolkit checkMustLibraryAuthorityWithCallBack:^{
 
             }];
 //    }
@@ -155,7 +157,7 @@
     [self.navigationController.navigationBar lt_reset];
     [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
-    [IQKeyboardManager sharedManager].enable = NO;
+    [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
     
     [self setupNav];
    
@@ -181,7 +183,7 @@
 {
     [super viewWillDisappear:animated];
     [self.navigationController.navigationBar lt_reset];
-    [IQKeyboardManager sharedManager].enable = YES;
+    [IQKeyboardManager sharedManager].enableAutoToolbar = YES;
     
 }
 
@@ -247,29 +249,33 @@
     
     [[RCIM sharedRCIM] refreshUserInfoCache:myUserInfo withUserId:myUserInfo.userId];
     
-    
-    if ([orderRecordModel.STATUS isEqualToString:@"C"]) {
-        [self.chatSessionInputBarControl setHidden:NO];
-//        self.endBottomView.hidden = YES;
-        [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.view);
-            make.bottom.equalTo(self.chatSessionInputBarControl.inputTextView.mas_top).mas_offset(-20);
-            make.right.left.equalTo(self.view);
-        }];
-      
+//    @weakify(self)
+//
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        @strongify(self)
+        if ([orderRecordModel.STATUS isEqualToString:@"C"]) {
+            [self.chatSessionInputBarControl setHidden:NO];
+    //        self.endBottomView.hidden = YES;
+            [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.top.equalTo(self.view);
+                make.bottom.equalTo(self.chatSessionInputBarControl.inputTextView.mas_top).mas_offset(-20);
+                make.right.left.equalTo(self.view);
+            }];
+          
 
-    }else{
-        [self.chatSessionInputBarControl setHidden:YES];
-//        self.endBottomView.hidden = NO;
-        [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.view);
-            make.bottom.equalTo(self.view).mas_offset(-20);
-            make.right.left.equalTo(self.view);
-        }];
-      
-        
-    }
-    
+        }else{
+            [self.chatSessionInputBarControl setHidden:YES];
+    //        self.endBottomView.hidden = NO;
+            [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.top.equalTo(self.view);
+                make.bottom.equalTo(self.view).mas_offset(-20);
+                make.right.left.equalTo(self.view);
+            }];
+          
+            
+        }
+//    });
+//
 //    [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
 //        make.top.equalTo(self.view);
 ////            make.bottom.equalTo(self.bottomListView.mas_top);
@@ -407,6 +413,20 @@
    
 }
 
+- (void)popGroupViewController
+{
+    for(UIViewController*controller in self.navigationController.viewControllers) {
+
+    if([controller isKindOfClass:[HOIMGroupDetailViewController class]]) {
+
+        HOIMGroupDetailViewController *revise =(HOIMGroupDetailViewController *)controller;
+
+      [self.navigationController popToViewController:revise animated:YES];
+
+
+    }
+    }
+}
 - (void)popTargetViewController{
 //    __block UIViewController * targetVC;
 //    if (self.navigationController.viewControllers.count > 2) {
@@ -497,11 +517,24 @@
     
     TYReportDetailViewController * vc = [[TYReportDetailViewController alloc] init];
  
-    vc.orderRecordModel = self.orderRecordModel;
-    
     EMRRecordModel *model = [[EMRRecordModel alloc] init];
     NSMutableDictionary *jsonDic = [recordModel mj_keyValues];
     vc.emrModel = [model mj_setKeyValues:jsonDic];
+    
+    YXOrderRecordModel *orderModel = [[YXOrderRecordModel alloc] init];
+    orderModel.USER_ID = model.USER_ID;
+    orderModel.USER_NAME = model.PATIENT_NAME;
+    orderModel.USER_AGE = model.PATIENT_AGE;
+    orderModel.USER_SEX = model.PATIENT_SEX;
+    orderModel.PATIENT_ID = model.PATIENT_ID;
+    orderModel.ID_CARD = model.PATIENT_IDCARD;
+    orderModel.START_TIME = model.INQUIRY_TIME;
+    orderModel.DEP_NAME = model.DEP_NAME;
+    orderModel.STAFF_NAME = model.STAFF_NAME;
+    
+    vc.orderRecordModel = orderModel;
+    
+    
     [self.navigationController pushViewController:vc animated:YES];
 }
 /*!
@@ -520,7 +553,7 @@
     
     if (![userId isEqualToString:self.model.userId]) {
         self.cerView.hidden = YES;
-        self.cerLabel.text = [NSString stringWithFormat:@"医生资格证书编号\n%@",self.cerNo.length>0 ? self.cerNo : @""];
+        self.cerLabel.text = [NSString stringWithFormat:@"医生资格证书编号：\n%@",self.cerNo.length>0 ? self.cerNo : @""];
         [self showCerView];
         [self performSelector:@selector(hiddenCerView) withObject:nil afterDelay:3.f];
     }
@@ -654,10 +687,10 @@
     [self.kyVideoVC.view removeFromSuperview];
     [self.kyVideoVC removeFromParentViewController];
     self.kyVideoVC = nil;
-    if ([type isEqualToString:@"2"]) {
+//    if ([type isEqualToString:@"2"]) {
         [self requestUpadateVideoInfoFunction:@"userLeft"];
         
-    }
+//    }
     [self requestGetMcDzByDzId:self.orderRecordModel.DZ_ID isLeft:NO];
 //    if ([_orderRecordModel.STATUS isEqualToString:@"D"]) {
 //        [self requestEndStatus:NO];
@@ -918,16 +951,12 @@
                         [self requestEndStatus:NO];
                         
                     }
-                    //超时未接诊
+//                    //超时未接诊/拒诊
                     else if ([self.orderRecordModel.STATUS isEqualToString:@"R"]){
-//                        [self.navigationController popViewControllerAnimated:YES];
                         
+                        [self popGroupViewController];
                     }
-                    //拒诊
-                    else if ([self.orderRecordModel.STATUS isEqualToString:@"J"]){
-//                        [self.navigationController popViewControllerAnimated:YES];
-                        
-                    }
+//
                     else if([self.orderRecordModel.STATUS isEqualToString:@"C"]){
 
 //                        [self.chatSessionInputBarControl setHidden:NO];
@@ -1007,9 +1036,7 @@
             if (arrayTemp.count > 0) {
 //                if (!self.orderRecordModel || ![self.orderRecordModel isEqualWithOrderRecord:arrayTemp[0]]) {
                     self.orderRecordModel = arrayTemp.firstObject;
-                if (self.cerNo.length>0) {
-                    [self getStaffLicenseInfo];
-                }
+                [self getStaffLicenseInfo];
 //                }
                 if (self.notificationMessage) {
                     [self sendMessage:self.notificationMessage pushContent:self.notificationMessage.message];
@@ -1083,9 +1110,9 @@
     
     NSDictionary * params = @{@"service" : @"clinicService",
                               @"method" : @"getCaseRecords",
-                              @"staffUserId" : self.orderRecordModel.STAFF_USER_ID,
+//                              @"staffUserId" : self.orderRecordModel.STAFF_USER_ID,
                               @"MIN_ROWS" : @(0),
-                              @"MAX_ROWS" : @(999),
+                              @"MAX_ROWS" : @(1),
                               @"userId" : self.model.userId,
                               @"recordId" : message.extraModel.recordId
     };

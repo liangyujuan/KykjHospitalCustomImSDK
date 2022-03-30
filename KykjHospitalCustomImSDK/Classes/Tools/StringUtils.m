@@ -21,7 +21,7 @@
 #import "NSDate+Extension.h"
 #import "Factory.h"
 
-static NSString *const  serverImageBase_URL = @"http://t-yxhlwyy.jkscw.com.cn";
+static NSString *const  serverImageBase_URL = @"https://hospital.tianyucare.com";
 
 
 #define IOS_CELLULAR    @"pdp_ip0"

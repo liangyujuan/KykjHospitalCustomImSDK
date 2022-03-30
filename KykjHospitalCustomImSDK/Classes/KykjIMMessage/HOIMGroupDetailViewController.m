@@ -50,6 +50,7 @@
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     [IQKeyboardManager sharedManager].enable = NO;
     [self setupNav];
+    [self scrollToBottomAnimated:YES];
    
 }
 - (void)viewDidAppear:(BOOL)animated
@@ -92,6 +93,8 @@
     
     [self setSubViews];
     
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshRCKitDispatchMessageNotification:) name:RCKitDispatchMessageNotification object:nil];
    
    
     self.conversationMessageCollectionView.backgroundColor = colorBackground;
@@ -103,6 +106,26 @@
 //    [self addUserToGroup];
     // Do any additional setup after loading the view.
 }
+#pragma mark - 收到消息
+- (void)refreshRCKitDispatchMessageNotification:(NSNotification*)noti
+{
+    NSLog(@"refreshRCKitDispatchMessageNotification=====");
+    @weakify(self)
+    RCMessage * message = noti.object;
+    RCMessageContent * content = message.content;
+    if ([content respondsToSelector:@selector(extra)]) {
+        NSString * extra = [content valueForKey:@"extra"];
+        NSLog(@"extra==:%@",extra);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            @strongify(self)
+            [self setupNav];
+            [self scrollToBottomAnimated:YES];
+            
+        });
+        
+    }
+}
+
 - (void)setupNav{
     
 //    self.titleLabel.textColor = [UIColor blackColor];
@@ -509,11 +532,11 @@
     
 //    [param setObject:@"raiseGuidanceForTesting" forKey:@"method"];
 //    [param setObject:@"307430" forKey:@"staffId"];
-//   
+//
 //    [param setObject:@"梁玉娟" forKey:@"staffName"];
 //
 //    [param setObject:@"17784915" forKey:@"expertUserId"];
-//    
+//
 //    [param setObject:getSafeString(_model.userId) forKey:@"userId"];
 //
 //    [param setObject:getSafeString(_model.idCard) forKey:@"userIdCard"];
@@ -703,10 +726,10 @@
 
 - (void)onRecvC2CTextMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId text:(NSString *)text
 {
-    [LeafNotification showInController:self withText:@"videoing ===== onRecvC2CTextMessage"];
-    if ([text isEqualToString:@"医生忙碌中，请重新发起视频"]) {
+//    [LeafNotification showInController:self withText:@"videoing ===== onRecvC2CTextMessage"];
+//    if ([text isEqualToString:@"医生忙碌中，请重新发起视频"]) {
 //        [self hungUpAction];
-    }
+//    }
 }
 - (void)onRecvC2CCustomMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId customData:(NSData *)data
 {

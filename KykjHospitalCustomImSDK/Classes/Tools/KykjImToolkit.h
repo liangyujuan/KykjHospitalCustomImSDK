@@ -59,6 +59,8 @@ json转数组
  
  @param callback 允许授权callback
  */
++ (void)checkMustLibraryAuthorityWithCallBack:(AuthorizationStatusCallBack)callback;
+
 + (void)checkLibraryAuthorityWithCallBack:(AuthorizationStatusCallBack)callback;
 /**
  检测相机权限

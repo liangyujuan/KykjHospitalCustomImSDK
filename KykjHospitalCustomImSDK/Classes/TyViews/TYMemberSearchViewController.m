@@ -178,11 +178,13 @@
 }
 - (void)textFieldDidChange:(UITextField *)textfield
 {
-//    UITextRange *markedTextRange = textfield.markedTextRange;
-//    //如果存在待选文字记录，则暂不处理 markedTextRange == nil说明不存在待选文字
-//    if (markedTextRange == nil) {
-//        [self requestMemberWithSearchString:textfield.text];
-//    }
+    UITextRange *markedTextRange = textfield.markedTextRange;
+    //如果存在待选文字记录，则暂不处理 markedTextRange == nil说明不存在待选文字
+    if (markedTextRange == nil) {
+        if (textfield.text.length > 11) {
+            textfield.text=[textfield.text substringToIndex:11];
+        }
+    }
     
 }
 //判断是否为正浮点形：

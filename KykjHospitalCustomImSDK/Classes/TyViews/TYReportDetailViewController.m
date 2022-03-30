@@ -61,7 +61,7 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:left];
    
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-160, 44)];
-    titleLabel.text = @"报告详情";
+    titleLabel.text = @"诊断报告";
     titleLabel.textColor = [UIColor blackColor];
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.font = [UIFont boldSystemFontOfSize:18];
@@ -181,6 +181,11 @@
     
     [self requestPatientId];
     
+    if (![KykjImToolkit isStringBlank:self.emrModel.DIAGNOSE]) {
+        NSArray *icdArray = [KykjImToolkit arrayWithJson:self.emrModel.DIAGNOSE];
+        self.diagnosisSelectArray = [NSMutableArray arrayWithArray:icdArray];
+    }
+    
     [self preview];
     
 }
@@ -202,20 +207,21 @@
     NSString *physicalCheckText = self.emrModel.PHYSICAL_EXAMINATION.length>0 ? self.emrModel.PHYSICAL_EXAMINATION : @"";//体格检查
     
     NSString *auxiliaryCheckText = self.emrModel.AUXILIARY_EXAMINATION.length>0 ? self.emrModel.AUXILIARY_EXAMINATION : @"";//辅助检查
-    if (![KykjImToolkit isStringBlank:self.emrModel.DIAGNOSE]) {
-        NSArray *icdArray = [KykjImToolkit arrayWithJson:self.emrModel.DIAGNOSE];
-        self.diagnosisSelectArray = [NSMutableArray arrayWithArray:icdArray];
-    }
     
     NSString *diagnosisHistoryText = @"";//诊断
     for (int i=0;i<self.diagnosisSelectArray.count;i++) {
         NSDictionary *dic = self.diagnosisSelectArray[i];
-        if (i<self.diagnosisSelectArray.count-1) {
-            diagnosisHistoryText = [diagnosisHistoryText stringByAppendingFormat:@"%@,",[dic objectForKey:@"illName"]];
-        }else{
-            diagnosisHistoryText = [diagnosisHistoryText stringByAppendingFormat:@"%@",[dic objectForKey:@"illName"]];
-        }
+//        if (i<self.diagnosisSelectArray.count-1) {
+//            diagnosisHistoryText = [diagnosisHistoryText stringByAppendingFormat:@"%@,",[dic objectForKey:@"illName"]];
+//        }else{
+//            diagnosisHistoryText = [diagnosisHistoryText stringByAppendingFormat:@"%@",[dic objectForKey:@"illName"]];
+//        }
         
+        if (i<self.diagnosisSelectArray.count-1) {
+            diagnosisHistoryText = [diagnosisHistoryText stringByAppendingFormat:@"%d.%@\n",i+1,[dic objectForKey:@"illName"]];
+        }else{
+            diagnosisHistoryText = [diagnosisHistoryText stringByAppendingFormat:@"%d.%@",i+1,[dic objectForKey:@"illName"]];
+        }
     }
   
     if (![KykjImToolkit isStringBlank:self.emrModel.PROPOSAL]) {
@@ -369,25 +375,25 @@
     
     if (self.type == EMREditViewAdultWomanMonthliesType || self.type == EMREditViewAdultWomanNormalType) {
     
-        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"婚育史：",@"月经史：",@"体格检查：",@"辅助检查：",@"诊断：",@"处理意见："];
+        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"婚育史：",@"月经史：",@"体格检查：",@"辅助检查：",@"诊断：",@"建议："];
         self.sourceArray = @[describeText,presentSickText,pastSickText,personalText,allergyHistoryText,pregnancyText,monthliesText,physicalCheckText,auxiliaryCheckText,diagnosisHistoryText,doctorAdviceText];
         
     }
     else if (self.type == EMREditViewAdultManType) {
         
-        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"婚育史：",@"体格检查：",@"辅助检查：",@"诊断：",@"处理意见："];
+        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"婚育史：",@"体格检查：",@"辅助检查：",@"诊断：",@"建议："];
         self.sourceArray = @[describeText,presentSickText,pastSickText,personalText,allergyHistoryText,pregnancyText,physicalCheckText,auxiliaryCheckText,diagnosisHistoryText,doctorAdviceText];
         
     }
     else if (self.type == EMREditViewChildrenWomanMonthliesType || self.type == EMREditViewChildrenWomanNormalType){
         
-        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"月经史：",@"体格检查：",@"辅助检查：",@"诊断：",@"处理意见："];
+        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"月经史：",@"体格检查：",@"辅助检查：",@"诊断：",@"建议："];
         self.sourceArray = @[describeText,presentSickText,pastSickText,personalText,allergyHistoryText,monthliesText,physicalCheckText,auxiliaryCheckText,diagnosisHistoryText,doctorAdviceText];
         
     }
     else if (self.type == EMREditViewChildrenManType){
         
-        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"体格检查：",@"辅助检查：",@"诊断：",@"处理意见："];
+        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"体格检查：",@"辅助检查：",@"诊断：",@"建议："];
         self.sourceArray = @[describeText,presentSickText,pastSickText,personalText,allergyHistoryText,physicalCheckText,auxiliaryCheckText,diagnosisHistoryText,doctorAdviceText];
         
     }

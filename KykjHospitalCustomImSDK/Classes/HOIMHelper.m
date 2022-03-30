@@ -31,7 +31,7 @@
 //static NSString *rongIMAppKey = @"tdrvipkst7w75";//重庆云信
 
 /** 图片地址 host */
-static NSString *const  serverImageBase_URL = @"http://t-yxhlwyy.jkscw.com.cn";
+static NSString *const  serverImageBase_URL = @"https://hospital.tianyucare.com";
 
 /** 默认医生头像 */
 static NSString *const  kDefaultStaffIconUrl = @"https://hlwyyv2.jkscw.com.cn/ystresource/img/common_staffimg.png";
