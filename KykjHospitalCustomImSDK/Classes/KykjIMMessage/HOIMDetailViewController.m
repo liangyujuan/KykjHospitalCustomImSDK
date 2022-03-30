@@ -1120,7 +1120,8 @@
     WS(weakself)
     MBProgressHUDShowInThisView;
     [HttpOperationManager HTTP_POSTWithParameters:params showAlert:NO success:^(id responseObject) {
-        MBProgressHUDHideAllInThisView(weakself);
+//        MBProgressHUDHideAllInThisView(weakself);
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
         NSString * result = responseObject[@"result"];
         if([result isEqualToString:@"success"]){
             NSArray *patientGroups = [responseObject objectForKey:@"list"];
@@ -1138,7 +1139,7 @@
 //                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
         }
     } failure:^(NSError *error) {
-        MBProgressHUDHideAllInThisView(weakself);
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
     }];
 }
 

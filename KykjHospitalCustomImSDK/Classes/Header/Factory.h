@@ -103,7 +103,7 @@
 //MBProgressHUD 快捷使用
 #define MBProgressHUDShowInThisView if(![MBProgressHUD HUDForView:self.view])[MBProgressHUD showHUDAddedTo:self.view animated:YES]
 
-#define MBProgressHUDHideAllInThisView(weakself) [MBProgressHUD hideAllHUDsForView:weakself.view animated:YES]
+//#define MBProgressHUDHideAllInThisView(weakself) [MBProgressHUD hideAllHUDsForView:weakself.view animated:YES]
 
 typedef NS_ENUM(NSUInteger, EMREditViewType) {
     EMREditViewAdultWomanNormalType = 0,//成年女性，不展示月经史详情部分，只展示婚育史

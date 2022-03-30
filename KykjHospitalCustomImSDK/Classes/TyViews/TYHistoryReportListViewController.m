@@ -284,7 +284,7 @@
     WS(weakself)
 //    MBProgressHUDShowInThisView;
     [HttpOperationManager HTTP_POSTWithParameters:params showAlert:NO success:^(id responseObject) {
-        MBProgressHUDHideAllInThisView(weakself);
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
         [weakself.tableView.mj_footer endRefreshing];
         [weakself.tableView.mj_header endRefreshing];
         NSString * result = responseObject[@"result"];
@@ -310,7 +310,7 @@
     } failure:^(NSError *error) {
         [weakself.tableView.mj_footer endRefreshing];
         [weakself.tableView.mj_header endRefreshing];
-        MBProgressHUDHideAllInThisView(weakself);
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
     }];
 }
 /*
