@@ -46,7 +46,8 @@
     if (hudQuene > 0) {
         MBProgressHUDShowInThisView;
     }else{
-        MBProgressHUDHideAllInThisView(self);
+//        MBProgressHUDHideAllInThisView(self);
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         
     }
 }
