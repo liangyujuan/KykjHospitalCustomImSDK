@@ -68,8 +68,8 @@
     [_patientNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.timeLabel);
         make.left.equalTo(self.bgView).mas_offset(15);
-        make.right.equalTo(self.timeLabel.mas_left).mas_offset(-15);
-//        make.width.mas_equalTo(ScreenWidth-160);
+//        make.right.equalTo(self.timeLabel.mas_left).mas_offset(-15);
+        make.width.mas_equalTo(ScreenWidth-210);
     }];
     
     _depLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
@@ -116,7 +116,7 @@
     }
     _patientNameLabel.hidden = NO;
     _diagnosisLabel.text = [NSString stringWithFormat:@"诊断：%@",diagnosisHistoryText];
-    _patientNameLabel.text = _emrNetModel.PATIENT_NAME;
+    _patientNameLabel.text = _emrNetModel.STAFF_NAME;
     _depLabel.text = [NSString stringWithFormat:@"科室： %@",_emrNetModel.DEP_NAME];
 
     _diagnosisLabel.textColor = RGB(102, 102, 102);

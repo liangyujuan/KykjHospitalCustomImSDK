@@ -36,6 +36,8 @@ static const NSInteger maxRemoteUserNum = 9;
 
 @property (nonatomic, strong) UIView *callWaitingView;
 
+@property (nonatomic, strong) UIView *centerTempView;
+
 @property (nonatomic, strong) UILabel *waiteTimeLabel;
 
 @property (nonatomic, strong) UILabel *waitTitleLabel;
@@ -110,8 +112,6 @@ static const NSInteger maxRemoteUserNum = 9;
 
     
     [self setupTRTCCloud];
-    
-    [self requestWaitingCount];
     
     [self.timer fire];
     
@@ -217,22 +217,33 @@ static const NSInteger maxRemoteUserNum = 9;
         make.centerX.equalTo(self.callWaitingView);
     }];
     
+    _centerTempView = [[UIView alloc] init];
+    [self.callWaitingView addSubview:_centerTempView];
+    
+    [_centerTempView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.height.mas_equalTo(10);
+        make.width.mas_equalTo(1);
+        make.centerX.equalTo(self.callWaitingView);
+        make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
+    }];
     _waiteTimeLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
         make.text(@"已等待1秒钟").textAlignment(NSTextAlignmentCenter).textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont systemFontOfSize:18]).addToSuperView(self.callWaitingView);
     }];
     [_waiteTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
-        make.left.equalTo(self.callWaitingView).mas_offset(15);
+//        make.left.equalTo(self.callWaitingView).mas_offset(15);
+        make.centerX.equalTo(self.callWaitingView);
 //        make.right.equalTo(self.callWaitingView).mas_offset(-15);
     }];
     
     _waiteCountLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
         make.text(@"").textAlignment(NSTextAlignmentLeft).textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont systemFontOfSize:18]).addToSuperView(self.callWaitingView);
     }];
+    _waiteCountLabel.hidden = YES;
     [_waiteCountLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
-        make.left.equalTo(self.waiteTimeLabel.mas_right).mas_offset(5);
-        make.right.equalTo(self.callWaitingView).mas_offset(-15);
+        make.left.equalTo(self.centerTempView.mas_right);
+//        make.right.equalTo(self.callWaitingView).mas_offset(-15);
     }];
     
     _doctorHeaderImg = [[UIImageView alloc] init];
@@ -329,7 +340,7 @@ static const NSInteger maxRemoteUserNum = 9;
         [_trtcCloud exitRoom];
         [TRTCCloud destroySharedIntance];
 //        [self removeSimpleMsgListener];
-        [self.delegate hungUpDelegateActionWithType:@"2"];
+        [self.delegate hungUpDelegateActionWithType:@"1"];
     }
     
 }
@@ -433,7 +444,7 @@ static const NSInteger maxRemoteUserNum = 9;
     if ([userID isEqualToString:self.orderRecordModel.STAFF_USER_ID]) {
 //        [SVProgressHUD showInfoWithStatus:@"医生已经退出视频，此次视频问诊结束"];
 //        [SVProgressHUD dismissWithDelay:2.0f];
-        [LeafNotification showInController:self withText:@"医生已经退出视频，此次视频问诊结束"];
+        [LeafNotification showHint:@"医生已经退出视频，此次视频问诊结束" yOffset:100];
         [self performSelector:@selector(hungUpDoctorAction) withObject:nil afterDelay:2.0f];
     }
     [_collectionView reloadData];
@@ -456,7 +467,7 @@ static const NSInteger maxRemoteUserNum = 9;
     if ([userID isEqualToString:self.orderRecordModel.STAFF_USER_ID]) {
 //        [SVProgressHUD showInfoWithStatus:@"医生已经进入视频"];
 //        [SVProgressHUD dismissWithDelay:2.0f];
-        [LeafNotification showInController:self withText:@"医生已经进入视频"];
+        [LeafNotification showHint:@"医生已经进入视频" yOffset:100];
         [_timer invalidate];
         _timer = nil;
         if (self.remoteUidSet.count>1) {
@@ -536,7 +547,7 @@ static const NSInteger maxRemoteUserNum = 9;
     if (_timeCount !=0)
     {
 
-        if ((300-_timeCount)<60) {
+        if ((300-_timeCount)<60 && (300-_timeCount)>0) {
             _waiteTimeLabel.text = [NSString stringWithFormat:@"已等待%d秒钟",(int)((300-_timeCount))];
         }
         else if ((300-_timeCount)%60 == 0) {
@@ -554,72 +565,17 @@ static const NSInteger maxRemoteUserNum = 9;
     {
 //        [SVProgressHUD showInfoWithStatus:@"医生忙碌中，请稍后再发起视频！"];
 //        [SVProgressHUD dismissWithDelay:2.f];
-        [LeafNotification showInController:self withText:@"医生忙碌中，请稍后再发起视频！"];
-        [self hungUpAction];
-        [_timer invalidate];
-        _timer = nil;
+        [LeafNotification showHint:@"医生忙碌中，请稍后再发起视频！" yOffset:100];
+        [self performSelector:@selector(timeEnd) withObject:nil afterDelay:1.5f];
+       
        
     }
 }
-- (void)requestWaitingCount
-{
-    NSMutableDictionary *param = [NSMutableDictionary dictionary];
-    [param setObject:@"dzService" forKey:@"service"];
-    [param setObject:@"getCountInLine" forKey:@"method"];
-    [param setObject:self.orderRecordModel.USER_ID forKey:@"userId"];
-    [param setObject:self.orderRecordModel.DZ_ID forKey:@"dzId"];
+- (void)timeEnd{
+    [self hungUpAction];
+    [_timer invalidate];
+    _timer = nil;
     
-    @weakify(self)
-    [HttpOperationManager HTTP_POSTWithParameters:param showAlert:NO success:^(id responseObject) {
-      @strongify(self)
-
-        if (responseObject!=nil) {
-
-//            system.TOKEN = getSafeString(responseObject[@"token"]);
-            if ([responseObject[@"result"] isEqualToString:@"success"]) {
-                if (responseObject[@"count"]!=nil) {
-                    
-                    if ([responseObject[@"count"] intValue] <=0) {
-                        self.waiteCountLabel.text = @"";
-                        self.waiteCountLabel.hidden = YES;
-                        [self.waiteTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-                            make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
-                            make.centerX.equalTo(self.callWaitingView);
-                        }];
-                    }else{
-                        
-                        self.waiteCountLabel.text = [NSString stringWithFormat:@"前面排队还有%@人",responseObject[@"count"]];
-                        self.waiteCountLabel.hidden = NO;
-                        [self.waiteTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-                            make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
-                            make.left.equalTo(self.callWaitingView).mas_offset(15);
-                        }];
-                        
-                    }
-                }
-                
-                
-            }else{
-                self.waiteCountLabel.text = @"";
-                self.waiteCountLabel.hidden = YES;
-                [self.waiteTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-                    make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
-                    make.centerX.equalTo(self.callWaitingView);
-                }];
-                NSString *msgString = getSafeString(responseObject[@"info"]);
-                if (msgString.length > 0) {
-                    [LeafNotification showInController:self withText:msgString];
-                }else
-                    [LeafNotification showInController:self withText:@"系统错误，请稍后再试！"];
-            }
-     
-            
-        }
-    } failure:^(NSError *error) {
-        NSLog(@"error:%@",error.userInfo);
-  
-        [LeafNotification showInController:self withText:error.userInfo];
-    }];
 }
 #pragma mark - lazy load
 - (NSTimer *)timer
@@ -627,7 +583,7 @@ static const NSInteger maxRemoteUserNum = 9;
     if (!_timer)
     {
         _timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(timerFired:) userInfo:nil repeats:YES];
-        _timeCount = 300;
+        _timeCount = 299;
     }
     return _timer;
 }
@@ -658,13 +614,32 @@ static const NSInteger maxRemoteUserNum = 9;
 
 - (void)onRecvC2CTextMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId text:(NSString *)text
 {
-    [LeafNotification showInController:self withText:@"医生忙碌中，请重新发起视频"];
+    [LeafNotification showHint:@"医生忙碌中，请重新发起视频" yOffset:100];
     if ([text isEqualToString:@"医生忙碌中，请重新发起视频"]) {
         [self hungUpAction];
     }
 }
 - (void)onRecvC2CCustomMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId customData:(NSData *)data
 {
+    
+}
+
+- (void)setCountString:(NSString *)countString
+{
+    _countString = countString;
+    self.waiteCountLabel.text = [NSString stringWithFormat:@"前面排队还有%@人",_countString];
+    self.waiteCountLabel.hidden = NO;
+    [self.waiteTimeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
+        make.right.equalTo(self.centerTempView.mas_left).mas_offset(-20);
+        
+    }];
+    [_waiteCountLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.waitTitleLabel.mas_bottom).mas_offset(15);
+        make.left.equalTo(self.centerTempView.mas_right).mas_offset(-15);
+//        make.right.equalTo(self.callWaitingView).mas_offset(-15);
+    }];
+    
     
 }
 

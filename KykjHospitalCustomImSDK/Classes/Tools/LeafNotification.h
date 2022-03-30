@@ -35,4 +35,6 @@ typedef enum {
 //设置消失时间
 +(void)showInController:(UIViewController *)controller withText:(NSString *)text withTime:(NSInteger)time;
 
++(void)showHint:(NSString *)hint yOffset:(float)yOffset;
+
 @end

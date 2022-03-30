@@ -23,10 +23,19 @@
 
 @interface HOIMGroupDetailViewController ()
 
-@property (nonatomic, strong) UIButton * right;
+@property (nonatomic, strong) UIButton * leftButton;
+@property (nonatomic, strong) UIButton * rightButton;
 @property (nonatomic, strong) UILabel *titleLabel;
 
 @property (nonatomic, strong) UILabel *consultCuntLabel;
+
+@property (nonatomic, copy) NSString *cerNo;
+
+@property (nonatomic, strong) UIView *cerView;
+
+@property (nonatomic, strong) UILabel *cerLabel;
+
+@property (nonatomic, strong) UIButton *videoButton;
 
 @end
 
@@ -41,16 +50,19 @@
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     [IQKeyboardManager sharedManager].enable = NO;
     [self setupNav];
+   
+}
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:YES];
+    [self setupNav];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [self.navigationController.navigationBar lt_reset];
-    [IQKeyboardManager sharedManager].enable = YES;
-}
-- (void)viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
+//    [IQKeyboardManager sharedManager].enable = YES;
 }
 
 - (void)viewDidLoad {
@@ -58,13 +70,17 @@
 //    self.view.backgroundColor = RGB(249, 249, 249);
     
 //    self.navigationController.navigationBarHidden = NO;
+//    self.title = @"聊天室";
+   
     
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-//
-    self.navigationController.navigationBar.translucent = NO;
+    
+//    self.edgesForExtendedLayout = UIRectEdgeNone;
+//    self.navigationController.navigationBar.translucent = NO;
     self.view.backgroundColor = colorBackground;
     
+    self.navigationItem.hidesBackButton = YES;
     
+    [self setupNav];
     
 //    self.edgesForExtendedLayout = UIRectEdgeNone;
 //
@@ -76,13 +92,9 @@
     
     [self setSubViews];
     
-    [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view);
-//            make.bottom.equalTo(self.bottomListView.mas_top);
-        make.bottom.equalTo(self.chatSessionInputBarControl.inputTextView.mas_top).mas_offset(-160);
-        make.left.right.equalTo(self.view);
-    }];
    
+   
+    self.conversationMessageCollectionView.backgroundColor = colorBackground;
     
     [self registerClass:[HOConsultMessageCell class] forMessageClass:[HOConsultMessage class]];
     [self registerClass:[HOConsultMessageCell class] forMessageClass:[HOPatientMessage class]];
@@ -93,29 +105,23 @@
 }
 - (void)setupNav{
     
-    UIButton * left = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-//    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-    [left addTarget:self action:@selector(leftBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:left];
+//    self.titleLabel.textColor = [UIColor blackColor];
     
-    _right = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-//    [_right setImage:[UIImage imageNamed:@"M_setting_ic"] forState:UIControlStateNormal];
-    [_right setTitle:@"历史报告" forState:UIControlStateNormal];
-    [_right setTitleColor:RGB(1, 111, 255) forState:UIControlStateNormal];
-    _right.titleLabel.font = [UIFont systemFontOfSize:14];
-    [_right addTarget:self action:@selector(rightBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_right];
-//    _right.hidden = YES;
-    
-    self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-160, 44)];
-    self.titleLabel.text = @"聊天室";
-    self.titleLabel.textColor = [UIColor blackColor];
-    self.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.titleLabel.font = [UIFont boldSystemFontOfSize:18];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.leftButton];
+//
+//
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightButton];
+//
     self.navigationItem.titleView = self.titleLabel;
+//    self.title = @"聊天室";
+//    self.navigationItem.titleView.tintColor = [UIColor blackColor];
     
-    
+}
+
+- (void)leftBarButtonAction
+{
+    [self.navigationController popViewControllerAnimated:YES];
+   
 }
 - (void)initConfig{
 //    @weakify(self)
@@ -168,13 +174,13 @@
     }
     
     
-    UIButton *videoButton = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
-        make.titleForState(@"视频问诊",UIControlStateNormal).titleColorForState([UIColor whiteColor],UIControlStateNormal).titleFont([UIFont boldSystemFontOfSize:20]).backgroundColor(RGB(1, 111, 255)).imageForState([KykjImToolkit getImageResourceForName:@"ty_chat_video"],UIControlStateNormal).addAction(self,@selector(requestCreateOrder),UIControlEventTouchUpInside).addToSuperView(self.view);
+    _videoButton = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
+        make.titleForState(@"视频问诊",UIControlStateNormal).titleColorForState([UIColor whiteColor],UIControlStateNormal).titleFont([UIFont boldSystemFontOfSize:20]).backgroundColor(RGB(1, 111, 255)).imageForState([KykjImToolkit getImageResourceForName:@"ty_chat_video"],UIControlStateNormal).addAction(self,@selector(actionCreateOrder),UIControlEventTouchUpInside).addToSuperView(self.view);
     }];
-    videoButton.layer.cornerRadius = 10.f;
-    [videoButton setImageEdgeInsets:UIEdgeInsetsMake(0, -10, 0, 0)];
-    [videoButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 0, -10)];
-    [videoButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    _videoButton.layer.cornerRadius = 10.f;
+    [_videoButton setImageEdgeInsets:UIEdgeInsetsMake(0, -10, 0, 0)];
+    [_videoButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 0, -10)];
+    [_videoButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.height.mas_equalTo(49);
         make.bottom.equalTo(self.view).mas_offset(-15-insets.bottom);
         make.left.equalTo(self.view).mas_offset(15);
@@ -204,7 +210,7 @@
     [self.view addSubview:_consultCuntLabel];
     [_consultCuntLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view);
-        make.bottom.equalTo(videoButton.mas_top).mas_offset(-15);
+        make.bottom.equalTo(self.videoButton.mas_top).mas_offset(-15);
         make.height.mas_equalTo(20);
     }];
     _consultCuntLabel.attributedText = attStr1;
@@ -212,12 +218,19 @@
     
     [self.chatSessionInputBarControl setHidden:YES];
     
+    [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view);
+//            make.bottom.equalTo(self.bottomListView.mas_top);
+        make.bottom.equalTo(self.consultCuntLabel.mas_top).mas_offset(-20);
+        make.left.right.equalTo(self.view);
+    }];
+    
     if (_model.countLeft.intValue>0) {
-        videoButton.enabled = YES;
-        videoButton.backgroundColor = RGB(1, 111, 255);
+        _videoButton.enabled = YES;
+        _videoButton.backgroundColor = RGB(1, 111, 255);
     }else{
-        videoButton.enabled = NO;
-        videoButton.backgroundColor = RGB(205, 205, 205);
+        _videoButton.enabled = NO;
+        _videoButton.backgroundColor = RGB(205, 205, 205);
     }
 }
 
@@ -236,7 +249,19 @@
         [super didTapMessageCell:model];
     }
 }
+/*!
+ 点击Cell中头像的回调
 
+ @param userId  点击头像对应的用户ID
+ */
+- (void)didTapCellPortrait:(NSString *)userId{
+    
+//    if (![userId isEqualToString:self.model.userId]) {
+//        [self getStaffLicenseInfoWithStaffUserId:userId];
+//    }
+
+    
+}
 - (void)willDisplayMessageCell:(RCMessageBaseCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
     if (cell.messageDirection == MessageDirection_SEND) {
@@ -363,15 +388,12 @@
             NSString *msgString = getSafeString(responseObject[@"info"]);
 
             if (msgString.length > 0) {
-                            [LeafNotification showInController:[KykjImToolkit getCurrentVC] withText:msgString];
-//                [SVProgressHUD showInfoWithStatus:msgString];
-//                [SVProgressHUD dismissWithDelay:1.0f];
-            }else{
-                            [LeafNotification showInController:[KykjImToolkit getCurrentVC] withText:@"系统错误，请稍后再试！"];
-//                [SVProgressHUD showInfoWithStatus:@"系统错误，请稍后再试！"];
-//                [SVProgressHUD dismissWithDelay:1.0f];
-            }
-          
+                [LeafNotification showHint:msgString yOffset:100];
+//                [LeafNotification showInController:weakself withText:msgString];
+            }else
+                [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:100];
+//                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
+           
            
         }
     } failure:^(NSError *error) {
@@ -397,15 +419,11 @@
             NSString *msgString = getSafeString(responseObject[@"info"]);
 
             if (msgString.length > 0) {
-                            [LeafNotification showInController:[KykjImToolkit getCurrentVC] withText:msgString];
-//                [SVProgressHUD showInfoWithStatus:msgString];
-//                [SVProgressHUD dismissWithDelay:1.0f];
-            }else{
-                            [LeafNotification showInController:[KykjImToolkit getCurrentVC] withText:@"系统错误，请稍后再试！"];
-//                [SVProgressHUD showInfoWithStatus:@"系统错误，请稍后再试！"];
-//                [SVProgressHUD dismissWithDelay:1.0f];
-            }
-          
+                [LeafNotification showHint:msgString yOffset:100];
+//                [LeafNotification showInController:weakself withText:msgString];
+            }else
+                [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:100];
+//                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
            
         }
     } failure:^(NSError *error) {
@@ -443,22 +461,40 @@
         }else{
             NSString *msgString = getSafeString(responseObject[@"info"]);
             if (msgString.length > 0) {
-                [LeafNotification showInController:weakself withText:msgString];
+                [LeafNotification showHint:msgString yOffset:100];
+//                [LeafNotification showInController:weakself withText:msgString];
             }else
-                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
+                [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:100];
+//                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
         }
     } failure:^(NSError *error) {
         MBProgressHUDHideAllInThisView(weakself);
     }];
 }
 
+- (void)actionCreateOrder
+{
+    @weakify(self)
+    [KykjImToolkit checkVideoAuthorityWithCallBack:^{
+        [KykjImToolkit checkMicroAuthorityWithCallBack:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                @strongify(self)
+                           
+                           [self requestCreateOrder];
+ 
+            });
+        }];
+    }];
+}
+
 - (void)requestCreateOrder
 {
+    MBProgressHUDShowInThisView;
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
     [param setObject:@"dzService" forKey:@"service"];
     [param setObject:@"raiseGuidance" forKey:@"method"];
     [param setObject:getSafeString(_model.userId) forKey:@"userId"];
-   
+
     [param setObject:getSafeString(_model.idCard) forKey:@"userIdCard"];
 
     [param setObject:getSafeString(_model.nameCn) forKey:@"userName"];
@@ -469,39 +505,62 @@
 
     [param setObject:[KykjImToolkit getUniqueStrByUUID] forKey:@"uuid"];
 
+    //写死
+    
+//    [param setObject:@"raiseGuidanceForTesting" forKey:@"method"];
+//    [param setObject:@"307430" forKey:@"staffId"];
+//   
+//    [param setObject:@"梁玉娟" forKey:@"staffName"];
+//
+//    [param setObject:@"17784915" forKey:@"expertUserId"];
+//    
+//    [param setObject:getSafeString(_model.userId) forKey:@"userId"];
+//
+//    [param setObject:getSafeString(_model.idCard) forKey:@"userIdCard"];
+//
+//    [param setObject:getSafeString(_model.nameCn) forKey:@"userName"];
+//
+//    [param setObject:getSafeString(_model.homeTel) forKey:@"userPhone"];
+//
+//    [param setObject:RegWayCode forKey:@"regWayCode"];
+//
+//    [param setObject:[KykjImToolkit getUniqueStrByUUID] forKey:@"uuid"];
+
     @weakify(self)
+    
+    self.videoButton.enabled = NO;
     
     [HttpOperationManager HTTP_POSTWithParameters:param showAlert:YES success:^(id responseObject) {
       
         @strongify(self)
+        
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         NSString * result = responseObject[@"result"];
         if([result isEqualToString:@"success"]){
             
             [self requestGetMcDz:responseObject[@"dzId"]];
             
         }else{
+            self.videoButton.enabled = YES;
             NSString *msgString = getSafeString(responseObject[@"info"]);
 
             if (msgString.length > 0) {
-                            [LeafNotification showInController:self withText:msgString];
-//                [SVProgressHUD showInfoWithStatus:msgString];
-//                [SVProgressHUD dismissWithDelay:1.0f];
-            }else{
-                            [LeafNotification showInController:self withText:@"系统错误，请稍后再试！"];
-//                [SVProgressHUD showInfoWithStatus:@"系统错误，请稍后再试！"];
-//                [SVProgressHUD dismissWithDelay:1.0f];
-            }
-          
-           
+                [LeafNotification showHint:msgString yOffset:100];
+//                [LeafNotification showInController:weakself withText:msgString];
+            }else
+                [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:100];
+//                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
         }
     } failure:^(NSError *error) {
         NSLog(@"error:%@",error.userInfo);
-       
+        @strongify(self)
+        self.videoButton.enabled = YES;
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
     }];
 }
 - (void)requestGetMcDz:(NSString*)dzId{
     
-//    MBProgressHUDShowInThisView;
+    MBProgressHUDShowInThisView;
     
    NSMutableDictionary *tempDict = [NSMutableDictionary dictionary];
     [tempDict setObject:@(0) forKey:@"MIN_ROWS"];
@@ -520,7 +579,8 @@
     @weakify(self)
     [HttpOperationManager HTTP_POSTWithParameters:tempDict showAlert:NO success:^(id responseObject) {
         @strongify(self)
-       
+        self.videoButton.enabled = YES;
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
     
         NSString * result = responseObject[@"result"];
         if([result isEqualToString:@"success"]){
@@ -535,21 +595,28 @@
                 
                
             }else{
-                [LeafNotification showInController:self withText:@"没有查到此订单"];
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                
+                [LeafNotification showHint:@"没有查到此订单" yOffset:100];
+              
             }
         }else{
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            self.videoButton.enabled = YES;
             NSString *msgString = getSafeString(responseObject[@"info"]);
             if (![getSafeString(responseObject[@"code"]) isEqualToString:@"301"]) {
                 if (msgString.length > 0) {
-                    [LeafNotification showInController:self withText:msgString];
+                    [LeafNotification showHint:msgString yOffset:100];
+    //                [LeafNotification showInController:weakself withText:msgString];
                 }else
-                    [LeafNotification showInController:self withText:@"系统错误，请稍后再试！"];
+                    [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:100];
+    //                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
             }
         }
     } failure:^(NSError *error) {
+        
+        @strongify(self)
+        self.videoButton.enabled = YES;
         [MBProgressHUD hideHUDForView:self.view animated:YES];
+        
     }];
 }
 
@@ -574,14 +641,62 @@
          }else{
              NSString *msgString = getSafeString(responseObject[@"info"]);
              if (msgString.length > 0) {
-                 [LeafNotification showInController:weakself withText:msgString];
+                 [LeafNotification showHint:msgString yOffset:100];
+ //                [LeafNotification showInController:weakself withText:msgString];
              }else
-                 [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
+                 [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:100];
+ //                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
          }
         
      } failure:^(NSError *error) {
          
      }];
+}
+
+- (void)getStaffLicenseInfoWithStaffUserId:(NSString*)staffUserId{
+    NSMutableDictionary *tempDict = [NSMutableDictionary dictionary];
+    [tempDict setObject:@"getStaffLicenseInfo" forKey:@"method"];
+    [tempDict setObject:staffUserId forKey:@"staffId"];
+    [tempDict setObject:@"consultService" forKey:@"service"];
+    
+    WS(weakself)
+    MBProgressHUDShowInThisView;
+    [HttpOperationManager HTTP_POSTWithParameters:tempDict showAlert:NO showLog:YES needEncryption:NO  success:^(id responseObject) {
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
+        NSString * result = responseObject[@"result"];
+        if([result isEqualToString:@"success"]){
+            NSDictionary *rowsDic = [responseObject objectForKey:@"rows"];
+            if (rowsDic!=nil) {
+                weakself.cerNo = rowsDic[@"PHYSICIAN_CERTIFICATE"];
+                dispatch_async(dispatch_get_main_queue(),^{
+
+                    weakself.cerView.hidden = YES;
+                    weakself.cerLabel.text = [NSString stringWithFormat:@"医生资格证书编号\n%@",self.cerNo.length>0 ? self.cerNo : @""];
+                    [weakself showCerView];
+                    [weakself performSelector:@selector(hiddenCerView) withObject:nil afterDelay:3.f];
+
+                });
+            }
+            
+            
+        }else{
+            dispatch_async(dispatch_get_main_queue(),^{
+
+                weakself.cerView.hidden = YES;
+                weakself.cerLabel.text = [NSString stringWithFormat:@"医生资格证书编号"];
+                [weakself showCerView];
+                [weakself performSelector:@selector(hiddenCerView) withObject:nil afterDelay:3.f];
+
+            });
+//            NSString *msgString = getSafeString(responseObject[@"info"]);
+//            if (msgString.length > 0) {
+//                [LeafNotification showInController:weakself withText:msgString];
+//            }else
+//                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
+        }
+    } failure:^(NSError *error) {
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
+    }];
 }
 
 #pragma mark - TRTCCallingDelegate
@@ -596,6 +711,107 @@
 - (void)onRecvC2CCustomMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId customData:(NSData *)data
 {
     
+}
+
+- (UIView*)cerView
+{
+    if (!_cerView) {
+        _cerView = [[UIView alloc] init];
+        _cerView.backgroundColor = [UIColor whiteColor];
+        _cerView.layer.cornerRadius = 10.f;
+        _cerView.layer.shadowOpacity = 0.6;
+        _cerView.layer.shadowColor = RGB(153, 153, 153).CGColor;
+        _cerView.layer.shadowOffset = CGSizeMake(0, 1);
+        _cerView.layer.shadowRadius = 2;
+        [[UIApplication sharedApplication].delegate.window addSubview:_cerView];
+        [_cerView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(290);
+            make.height.mas_equalTo(63);
+            make.centerX.centerY.equalTo([UIApplication sharedApplication].delegate.window);
+        }];
+        
+        _cerView.hidden = YES;
+        
+        _cerLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
+            make.backgroundColor([UIColor whiteColor]).textColor(RGB(51, 51, 51)).font([UIFont systemFontOfSize:14]).numberOfLines(0).addToSuperView(self.cerView);
+        }];
+        [_cerLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.centerY.equalTo(self.cerView);
+            
+        }];
+    }
+    return _cerView;
+}
+- (void)hiddenCerView
+{
+    _cerView.hidden = YES;
+    [UIView animateWithDuration:.3f animations:^{
+        [self.cerView layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            [self.cerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.width.mas_equalTo(0);
+                make.height.mas_equalTo(0);
+                make.centerX.centerY.equalTo(self.view);
+            }];
+        }];
+}
+- (void)showCerView
+{
+    _cerView.hidden = NO;
+    [UIView animateWithDuration:.3f animations:^{
+        [self.cerView layoutIfNeeded];
+        } completion:^(BOOL finished) {
+            [self.cerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.width.mas_equalTo(290);
+                make.height.mas_equalTo(63);
+                make.centerX.centerY.equalTo(self.view);
+            }];
+
+        }];
+}
+- (UILabel*)titleLabel
+{
+    if (!_titleLabel) {
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-160, 44)];
+        _titleLabel.text = @"聊天室";
+        _titleLabel.textColor = [UIColor blackColor];
+        _titleLabel.textAlignment = NSTextAlignmentCenter;
+        _titleLabel.font = [UIFont boldSystemFontOfSize:18];
+    }
+ 
+    return _titleLabel;
+    
+}
+- (UIButton*)rightButton
+{
+    if (!_rightButton) {
+        _rightButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
+    //    [_right setImage:[UIImage imageNamed:@"M_setting_ic"] forState:UIControlStateNormal];
+        [_rightButton setTitle:@"历史报告" forState:UIControlStateNormal];
+        [_rightButton setTitleColor:RGB(1, 111, 255) forState:UIControlStateNormal];
+        _rightButton.titleLabel.font = [UIFont systemFontOfSize:14];
+        [_rightButton addTarget:self action:@selector(rightBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
+       
+    }
+   
+
+    return _rightButton;
+}
+- (UIButton*)leftButton
+{
+    if (!_leftButton) {
+        _leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
+        [_leftButton setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
+    //    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
+        [_leftButton addTarget:self action:@selector(leftBarButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+
+    return _leftButton;
+}
+- (void)dealloc{
+    [_cerView removeFromSuperview];
+    _cerView = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 /*

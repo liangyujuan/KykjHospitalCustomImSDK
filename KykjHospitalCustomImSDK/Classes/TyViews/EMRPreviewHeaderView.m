@@ -23,7 +23,7 @@
 
 @property (nonatomic, strong) UIView *whiteBgView;
 
-@property (nonatomic, strong) UILabel *doctorLabel;
+@property (nonatomic, strong) UILabel *patientLabel;
 
 @property (nonatomic, strong) UILabel *depLabel;
 
@@ -81,16 +81,63 @@
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.topBgView).mas_offset(15);
         make.left.equalTo(self.topBgView).mas_offset(15);
-        make.right.equalTo(self.topBgView).mas_offset(-15);
+//        make.right.equalTo(self.topBgView).mas_offset(-15);
+        make.width.mas_equalTo(ScreenWidth-60);
+        make.height.mas_equalTo(15);
     }];
+    
+    _depLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
+        make.text(@"科室：").textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(self);
+    }];
+    [_depLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.nameLabel.mas_bottom).mas_offset(15);
+        make.left.equalTo(self.topBgView).mas_offset(15);
+        make.right.equalTo(self.topBgView).mas_offset(-15);
+        make.height.mas_equalTo(15);
+    }];
+    
+    _timeLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
+        make.text(@"就诊时间：").textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(self);
+    }];
+    [_timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.depLabel.mas_bottom).mas_offset(15);
+        make.left.equalTo(self.topBgView).mas_offset(15);
+        make.right.equalTo(self.topBgView).mas_offset(-15);
+        make.height.mas_equalTo(15);
+//        make.bottom.equalTo(self.topBgView.mas_bottom).mas_offset(-15);
+    }];
+    
+    
+    _line = [[UIView alloc] init];
+    _line.backgroundColor = [UIColor whiteColor];
+    [self addSubview:_line];
+    
+    [_line mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.topBgView).mas_offset(15);
+        make.right.equalTo(self.topBgView).mas_offset(-15);
+        make.top.equalTo(self.timeLabel.mas_bottom).mas_offset(15);
+        make.height.mas_equalTo(.5f);
+    }];
+    
+    _patientLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
+        make.text(@"就诊人：").textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(self);
+    }];
+    [_patientLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.line.mas_bottom).mas_offset(15);
+        make.left.equalTo(self.topBgView).mas_offset(15);
+        make.right.equalTo(self.topBgView).mas_offset(-15);
+        make.height.mas_equalTo(15);
+    }];
+    
     
     _detailLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
         make.text(@"男").textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(self);
     }];
     [_detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.nameLabel.mas_bottom).mas_offset(15);
+        make.top.equalTo(self.patientLabel.mas_bottom).mas_offset(15);
         make.left.equalTo(self.topBgView).mas_offset(15);
         make.right.equalTo(self.topBgView).mas_offset(-15);
+        make.height.mas_equalTo(15);
     }];
     
 
@@ -115,56 +162,25 @@
     [_telLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(self.telImg);
         make.left.equalTo(self.telImg.mas_right).mas_offset(9);
-    }];
-    
-    _line = [[UIView alloc] init];
-    _line.backgroundColor = [UIColor whiteColor];
-    [self addSubview:_line];
-    
-    [_line mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.topBgView).mas_offset(15);
-        make.right.equalTo(self.topBgView).mas_offset(-15);
-        make.top.equalTo(self.telImg.mas_bottom).mas_offset(15);
-        make.height.mas_equalTo(.5f);
-    }];
-    
-    _doctorLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.text(@"就诊医生：").textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(self);
-    }];
-    [_doctorLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.line.mas_bottom).mas_offset(15);
-        make.left.equalTo(self.topBgView).mas_offset(15);
-        make.right.equalTo(self.topBgView).mas_offset(-15);
-    }];
-    
-    _depLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.text(@"科室：").textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(self);
-    }];
-    [_depLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.doctorLabel.mas_bottom).mas_offset(15);
-        make.left.equalTo(self.topBgView).mas_offset(15);
-        make.right.equalTo(self.topBgView).mas_offset(-15);
-    }];
-    
-    _timeLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.text(@"就诊时间：").textColor([UIColor whiteColor]).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(self);
-    }];
-    [_timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.depLabel.mas_bottom).mas_offset(15);
-        make.left.equalTo(self.topBgView).mas_offset(15);
-        make.right.equalTo(self.topBgView).mas_offset(-15);
+        make.height.mas_equalTo(15);
         make.bottom.equalTo(self.topBgView.mas_bottom).mas_offset(-15);
     }];
+    
+    
+    
+    
+    
+    
 }
 
 - (void)setOrderRecordModel:(YXOrderRecordModel *)orderRecordModel
 {
     _orderRecordModel = orderRecordModel;
-    _nameLabel.text = _orderRecordModel.USER_NAME.length>0 ? _orderRecordModel.USER_NAME : @"";
+//    _nameLabel.text = _orderRecordModel.STAFF_NAME.length>0 ? [NSString stringWithFormat:@"医生：%@",_orderRecordModel.STAFF_NAME] : @"医生：";
     
     NSString *sex = @"";
     NSString *age = @"";
-    NSString *marriage = @"未婚";
+    NSString *marriage = @"";
     NSString *nation = @"";
     
     if ([_orderRecordModel.USER_SEX isEqualToString:@"1"]) {
@@ -176,21 +192,36 @@
     NSLog(@"NATION==%@",_orderRecordModel.NATION);
     
     nation = _orderRecordModel.NATION.length>0 ? _orderRecordModel.NATION : @"";
-    _telLabel.text = [NSString stringWithFormat:@"+%@",_orderRecordModel.CALL_PHONE.length>0 ? _orderRecordModel.CALL_PHONE : @""];
-    NSString * string = [NSString stringWithFormat:@"%@/%@/%@%@",sex,age,marriage,[NSString stringWithFormat:@"/%@",nation]];
+    _telLabel.text = [NSString stringWithFormat:@"%@",_orderRecordModel.CALL_PHONE.length>0 ? _orderRecordModel.CALL_PHONE : @""];
+    NSString *tempNation = nation.length>0 ? [NSString stringWithFormat:@"/%@",nation] : @"";
+    NSString * string = [NSString stringWithFormat:@"%@/%@%@",sex,age,tempNation];
     _detailLabel.text = string;
     
-    _timeLabel.text = [NSString stringWithFormat:@"就诊时间：%@",_orderRecordModel.START_TIME.length>0 ? _orderRecordModel.START_TIME : @""];
-    _doctorLabel.text = [NSString stringWithFormat:@"就诊医生：%@",_orderRecordModel.STAFF_NAME.length>0 ? _orderRecordModel.STAFF_NAME : @""];
-    _depLabel.text = [NSString stringWithFormat:@"科室：%@",_orderRecordModel.DEP_NAME.length>0 ? _orderRecordModel.DEP_NAME : @""];
+//
+//    _timeLabel.text = [NSString stringWithFormat:@"就诊时间：%@",_orderRecordModel.CREATE_TIME.length>0 ? _orderRecordModel.CREATE_TIME : @""];
+//    _patientLabel.text = [NSString stringWithFormat:@"就诊人：%@",_orderRecordModel.USER_NAME.length>0 ? _orderRecordModel.USER_NAME : @""];
+//    _depLabel.text = [NSString stringWithFormat:@"科室：%@",_orderRecordModel.DEP_NAME.length>0 ? _orderRecordModel.DEP_NAME : @""];
+    
+    [self.topBgView layoutIfNeeded];
     
 }
 
 - (void)setEmrModel:(EMRRecordModel *)emrModel
 {
     _emrModel = emrModel;
+    _nameLabel.text = _emrModel.STAFF_NAME.length>0 ? [NSString stringWithFormat:@"医生：%@",_emrModel.STAFF_NAME] : @"医生：";
+  
+    float nameH = [KykjImToolkit getStringSizeHeight:_nameLabel.text withFont:[UIFont boldSystemFontOfSize:23] Andwidht:ScreenWidth-60];
+    [_nameLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.topBgView).mas_offset(15);
+        make.left.equalTo(self.topBgView).mas_offset(15);
+//        make.right.equalTo(self.topBgView).mas_offset(-15);
+        make.width.mas_equalTo(ScreenWidth-60);
+        make.height.mas_equalTo(nameH);
+    }];
     _timeLabel.text = [NSString stringWithFormat:@"就诊时间：%@",_emrModel.INQUIRY_TIME.length>0 ? _emrModel.INQUIRY_TIME : @""];
-    _doctorLabel.text = [NSString stringWithFormat:@"就诊医生：%@",_emrModel.STAFF_NAME.length>0 ? _emrModel.STAFF_NAME : @""];
+    _patientLabel.text = [NSString stringWithFormat:@"就诊人：%@",_emrModel.PATIENT_NAME.length>0 ? _emrModel.PATIENT_NAME : @""];
     _depLabel.text = [NSString stringWithFormat:@"科室：%@",_emrModel.DEP_NAME.length>0 ? _emrModel.DEP_NAME : @""];
+    [self.topBgView layoutIfNeeded];
 }
 @end

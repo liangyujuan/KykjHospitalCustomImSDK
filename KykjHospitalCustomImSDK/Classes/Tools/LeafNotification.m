@@ -8,6 +8,7 @@
 
 #import "LeafNotification.h"
 #import <MBProgressHUD/MBProgressHUD.h>
+#import <Masonry/Masonry.h>
 
 #define DEFAULT_EDGE 24.0f
 #define DEFAULT_SPACE_IMG_TEXT 5.0f
@@ -143,18 +144,18 @@
 +(void)showInController:(UIViewController *)controller withText:(NSString *)text{
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:controller.view animated:YES];
     hud.mode = MBProgressHUDModeText;
-    hud.detailsLabelText = text;
+    hud.detailsLabel.text = text;
     hud.removeFromSuperViewOnHide = YES;
-    [hud hide:YES afterDelay:1.3];
+    [hud hideAnimated:YES afterDelay:1.5f];
 
 }
 
 +(void)showInView:(UIView *)view withText:(NSString *)text{
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
     hud.mode = MBProgressHUDModeText;
-    hud.detailsLabelText = text;
+    hud.detailsLabel.text = text;
     hud.removeFromSuperViewOnHide = YES;
-    [hud hide:YES afterDelay:1.3];
+    [hud hideAnimated:YES afterDelay:1.5f];
     
 }
 
@@ -162,9 +163,10 @@
 +(void)showInController:(UIViewController *)controller withText:(NSString *)text withTime:(NSInteger)time{
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:controller.view animated:YES];
     hud.mode = MBProgressHUDModeText;
-    hud.detailsLabelText = text;
+    hud.detailsLabel.text = text;
+    
     hud.removeFromSuperViewOnHide = YES;
-    [hud hide:YES afterDelay:time];
+    [hud hideAnimated:YES afterDelay:1.5f];
 
 }
 
@@ -180,5 +182,51 @@
     
 }
 
++(void)showHint:(NSString *)hint yOffset:(float)yOffset{
+    //显示提示信息
+    if ([hint isKindOfClass:[NSString class]]) {
+        UIView *view = [[UIApplication sharedApplication].delegate window];
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    //下面的2行代码必须要写，如果不写就会导致指示器的背景永远都会有一层透明度为0.5的背景
+        hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+        hud.bezelView.color = [UIColor colorWithWhite:0.f alpha:0.8f];
+        hud.userInteractionEnabled = NO;
+    //设置自定义样式的mode
+        hud.mode = MBProgressHUDModeCustomView;
+        CGRect rect = [hint boundingRectWithSize:CGSizeMake(MAXFLOAT, 60) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:18]} context:nil];
+        hud.minSize = CGSizeMake(rect.size.width+30, 60);
+        
+        hud.bezelView.layer.masksToBounds = NO;
+       
+        UILabel *titleLabel = [[UILabel alloc] init];
+        titleLabel.text = hint;
+        titleLabel.textAlignment = NSTextAlignmentCenter;
+    //    titleLabel.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.8];
+        titleLabel.font = [UIFont systemFontOfSize:18];
+        titleLabel.layer.cornerRadius = 10;
+        titleLabel.layer.masksToBounds = YES;
+        titleLabel.textColor = [UIColor whiteColor];
+        titleLabel.numberOfLines = 0;
+        [hud.bezelView addSubview:titleLabel];
+
+        float titleW = [UIApplication sharedApplication].delegate.window.bounds.size.width-135;
+        [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    //        make.center.equalTo(hud.bezelView);
+            make.centerX.equalTo(hud.bezelView);
+            make.top.equalTo(hud.bezelView).mas_offset(18);
+            make.bottom.equalTo(hud.bezelView).mas_offset(-18);
+            make.width.mas_equalTo(titleW);
+        }];
+
+        hud.margin = 20.f;
+    //    hud.yOffset = 180;
+    //    hud.yOffset += yOffset;
+    //    hud.yOffset = -[UIApplication sharedApplication].delegate.window.bounds.size.height/2;
+        hud.removeFromSuperViewOnHide = YES;
+        [hud hideAnimated:YES afterDelay:1.5f];
+    }
+   
+    
+}
 
 @end

@@ -86,6 +86,11 @@ json转数组
 
 + (UIImage *)getImageResourceForName:(NSString *)name;
 
+//根据内容和font获取字符串像素长度
++ (float) getStringSize:(NSString*)str withFont:(UIFont*)font;
+//根据内容和font获取字符串像素高度
++ (float) getStringSizeHeight:(NSString*)str withFont:(UIFont*)font Andwidht:(CGFloat)width;
+
 @end
 
 NS_ASSUME_NONNULL_END

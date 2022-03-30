@@ -360,4 +360,25 @@ return result;
     return image;
 }
 
+//更具内容和font获取字符串像素长度
++ (float) getStringSize:(NSString*)str withFont:(UIFont*)font
+{
+    CGSize detailSize = [str sizeWithFont:font
+                        constrainedToSize:CGSizeMake(MAXFLOAT, MAXFLOAT)
+                            lineBreakMode:NSLineBreakByCharWrapping];
+    return detailSize.width;
+    //CGRect rect = [str boundingRectWithSize:CGSizeMake(MAXFLOAT, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading|NSStringDrawingUsesDeviceMetrics attributes:[NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:fontSize] forKey:NSFontAttributeName] context:nil];
+
+   // return rect.size.width;
+    
+}
+
++ (float) getStringSizeHeight:(NSString*)str withFont:(UIFont*)font Andwidht:(CGFloat)width
+{
+    CGSize detailSize = [str sizeWithFont:font
+                        constrainedToSize:CGSizeMake(width, MAXFLOAT)
+                            lineBreakMode:NSLineBreakByCharWrapping];
+    return detailSize.height;
+}
+
 @end

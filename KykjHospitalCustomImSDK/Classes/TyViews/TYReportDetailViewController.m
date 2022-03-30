@@ -202,6 +202,10 @@
     NSString *physicalCheckText = self.emrModel.PHYSICAL_EXAMINATION.length>0 ? self.emrModel.PHYSICAL_EXAMINATION : @"";//体格检查
     
     NSString *auxiliaryCheckText = self.emrModel.AUXILIARY_EXAMINATION.length>0 ? self.emrModel.AUXILIARY_EXAMINATION : @"";//辅助检查
+    if (![KykjImToolkit isStringBlank:self.emrModel.DIAGNOSE]) {
+        NSArray *icdArray = [KykjImToolkit arrayWithJson:self.emrModel.DIAGNOSE];
+        self.diagnosisSelectArray = [NSMutableArray arrayWithArray:icdArray];
+    }
     
     NSString *diagnosisHistoryText = @"";//诊断
     for (int i=0;i<self.diagnosisSelectArray.count;i++) {
@@ -365,25 +369,25 @@
     
     if (self.type == EMREditViewAdultWomanMonthliesType || self.type == EMREditViewAdultWomanNormalType) {
     
-        self.titleArray = @[@"主诉",@"现病史",@"既往史",@"个人史",@"过敏史",@"婚育史",@"月经史",@"体格检查",@"辅助检查",@"诊断",@"处理意见"];
+        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"婚育史：",@"月经史：",@"体格检查：",@"辅助检查：",@"诊断：",@"处理意见："];
         self.sourceArray = @[describeText,presentSickText,pastSickText,personalText,allergyHistoryText,pregnancyText,monthliesText,physicalCheckText,auxiliaryCheckText,diagnosisHistoryText,doctorAdviceText];
         
     }
     else if (self.type == EMREditViewAdultManType) {
         
-        self.titleArray = @[@"主诉",@"现病史",@"既往史",@"个人史",@"过敏史",@"婚育史",@"体格检查",@"辅助检查",@"诊断",@"处理意见"];
+        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"婚育史：",@"体格检查：",@"辅助检查：",@"诊断：",@"处理意见："];
         self.sourceArray = @[describeText,presentSickText,pastSickText,personalText,allergyHistoryText,pregnancyText,physicalCheckText,auxiliaryCheckText,diagnosisHistoryText,doctorAdviceText];
         
     }
     else if (self.type == EMREditViewChildrenWomanMonthliesType || self.type == EMREditViewChildrenWomanNormalType){
         
-        self.titleArray = @[@"主诉",@"现病史",@"既往史",@"个人史",@"过敏史",@"月经史",@"体格检查",@"辅助检查",@"诊断",@"处理意见"];
+        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"月经史：",@"体格检查：",@"辅助检查：",@"诊断：",@"处理意见："];
         self.sourceArray = @[describeText,presentSickText,pastSickText,personalText,allergyHistoryText,monthliesText,physicalCheckText,auxiliaryCheckText,diagnosisHistoryText,doctorAdviceText];
         
     }
     else if (self.type == EMREditViewChildrenManType){
         
-        self.titleArray = @[@"主诉",@"现病史",@"既往史",@"个人史",@"过敏史",@"体格检查",@"辅助检查",@"诊断",@"处理意见"];
+        self.titleArray = @[@"主诉：",@"现病史：",@"既往史：",@"个人史：",@"过敏源：",@"体格检查：",@"辅助检查：",@"诊断：",@"处理意见："];
         self.sourceArray = @[describeText,presentSickText,pastSickText,personalText,allergyHistoryText,physicalCheckText,auxiliaryCheckText,diagnosisHistoryText,doctorAdviceText];
         
     }
@@ -411,6 +415,7 @@
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     _header.orderRecordModel = self.orderRecordModel;
+    _header.emrModel = self.emrModel;
     
     return _header;
 }
@@ -478,12 +483,11 @@
             NSString *msgString = getSafeString(responseObject[@"info"]);
 
             if (msgString.length > 0) {
-                            [LeafNotification showInController:[KykjImToolkit getCurrentVC] withText:msgString];
-                
-            }else{
-                            [LeafNotification showInController:[KykjImToolkit getCurrentVC] withText:@"系统错误，请稍后再试！"];
-               
-            }
+                [LeafNotification showHint:msgString yOffset:100];
+//                [LeafNotification showInController:weakself withText:msgString];
+            }else
+                [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:100];
+//                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
       
         }
     } failure:^(NSError *error) {

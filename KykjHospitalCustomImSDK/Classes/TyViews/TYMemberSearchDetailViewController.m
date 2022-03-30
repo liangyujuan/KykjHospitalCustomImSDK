@@ -46,15 +46,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    self.title = @"健康问诊";
+    self.title = @"健康问诊";
 //    self.navigationController.navigationBarHidden = NO;
     
 //    self.edgesForExtendedLayout = UIRectEdgeNone;
 //
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     self.navigationController.navigationBar.translucent = NO;
     self.view.backgroundColor = colorBackground;
-    
-    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     [self setupNav];
     
@@ -123,11 +122,12 @@
 //    NSString * sex = _tyModel.USER_SEX.intValue==1?@"男":@"女";
     
     _userNameLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.textColor(RGB(51, 51, 51)).font([UIFont boldSystemFontOfSize:16]).addToSuperView(bgView);
+        make.textColor(RGB(51, 51, 51)).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(bgView);
     }];
     [_userNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.headerImg.mas_right).mas_offset(10);
         make.top.equalTo(bgView).mas_offset(15);
+        make.width.mas_lessThanOrEqualTo(ScreenWidth-310);
     }];
     
     _userSexLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
@@ -159,7 +159,7 @@
     }];
     [_countLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.userNameLabel);
-        make.top.equalTo(self.userSexLabel.mas_bottom).mas_offset(10);
+        make.top.equalTo(self.userNameLabel.mas_bottom).mas_offset(10);
         make.width.mas_equalTo(ScreenWidth-80-75-30-10);
     }];
     
@@ -223,15 +223,29 @@
     _userSexLabel.text = [_model.gender isEqualToString:@"1"] ? @"男" : @"女";
     NSString *age = [KykjImToolkit getIdentityCardAge:_model.idCard].length>0 ? [NSString stringWithFormat:@"%@岁",[KykjImToolkit getIdentityCardAge:_model.idCard]] : @"";
     _userAgeLabel.text = age;
-    _countLabel.text = [NSString stringWithFormat:@"问诊可用次数：%d",_model.countLeft.intValue];
-    
+    _countLabel.text = [NSString stringWithFormat:@"问诊可用次数：%d次",_model.countLeft.intValue];
+//    _userNameLabel.text = @"啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦";
 
     
+    float bgH = [KykjImToolkit getStringSizeHeight:_userNameLabel.text withFont:[UIFont boldSystemFontOfSize:16] Andwidht:ScreenWidth-310];
+    [bgView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.height.mas_equalTo(bgH+15+40);
+    }];
+    
+  
     if (_model.onBehalf.intValue == 1) {
         _isMyLabel.text= @"[本人]";
     }else{
         _isMyLabel.text = @"";
     }
+    
+    if(_model.isInChatRoom.intValue == 1){
+        _videoingButton.hidden = NO;
+    }else{
+        _videoingButton.hidden = YES;
+    }
+    
+    [bgView layoutIfNeeded];
 
 }
 - (void)leftBarButtonItemPressed:(id)sender
@@ -240,6 +254,11 @@
 }
 - (void)videoAction
 {
+    if (_model.isInChatRoom.intValue == 1) {
+//        [LeafNotification showInController:self withText:@"当前会员正在视频中"];
+        [LeafNotification showHint:@"当前会员正在视频中" yOffset:100];
+        return;
+    }
     NSString *groupId = [NSString stringWithFormat:@"%@99999",_model.userId];
     HOIMGroupDetailViewController *vc = [[HOIMGroupDetailViewController alloc] initWithConversationType:ConversationType_GROUP targetId:groupId];
     
@@ -386,12 +405,13 @@
         }else{
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             NSString *msgString = getSafeString(responseObject[@"info"]);
-            if (![getSafeString(responseObject[@"code"]) isEqualToString:@"301"]) {
-                if (msgString.length > 0) {
-                    [LeafNotification showInController:self withText:msgString];
-                }else
-                    [LeafNotification showInController:self withText:@"系统错误，请稍后再试！"];
-            }
+            if (msgString.length > 0) {
+                [LeafNotification showHint:msgString yOffset:100];
+//                [LeafNotification showInController:weakself withText:msgString];
+            }else
+                [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:100];
+//                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
+            
         }
     } failure:^(NSError *error) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];

@@ -66,11 +66,15 @@
     // Do any additional setup after loading the view.
 //    self.edgesForExtendedLayout = UIRectEdgeNone;
 //
-//    self.navigationController.navigationBar.translucent = NO;
+
+    self.title = @"历史报告";
+    
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    self.navigationController.navigationBar.translucent = NO;
     self.view.backgroundColor = colorBackground;
     
     [self setupNav];
-//    self.title = @"历史报告";
+    
     self.arrayPatientRecords = [NSMutableArray array];
 //    [self requetGetCaseRecords];
     [self setupTableView];
@@ -268,7 +272,7 @@
     NSDictionary * params = @{@"service" : @"clinicService",
                               @"method" : @"getCaseRecords",
 //                              @"staffUserId" : system.loginInfo.USER_ID,
-//                              @"orgId" : system.loginUser.ORG_ID,
+                              @"orgId" : @"503350",
                               @"MIN_ROWS" : @(self.page*10),
                               @"MAX_ROWS" : @(self.page*10+10),
                               @"userId" : self.model.userId,
@@ -297,9 +301,11 @@
             [weakself.tableView.mj_header endRefreshing];
             NSString *msgString = getSafeString(responseObject[@"info"]);
             if (msgString.length > 0) {
-                [LeafNotification showInController:weakself withText:msgString];
+                [LeafNotification showHint:msgString yOffset:100];
+//                [LeafNotification showInController:weakself withText:msgString];
             }else
-                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
+                [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:100];
+//                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
         }
     } failure:^(NSError *error) {
         [weakself.tableView.mj_footer endRefreshing];

@@ -40,7 +40,7 @@ static LYJAlertView *_alertView;
 
 - (void)layoutSubviews
 {
-    _alert.layer.cornerRadius = 4.f;
+    _alert.layer.cornerRadius = 10.f;
 }
 #pragma mark - 确认弹出框
 + (void)showConfirmAlertWithContent:(NSString *)content
@@ -59,10 +59,12 @@ static LYJAlertView *_alertView;
 {
     _alert = [UIView new];
     _alert.backgroundColor = [UIColor whiteColor];
+//    _alert.layer.cornerRadius = 40.f;
+    _alert.clipsToBounds = YES;
     [_alertView addSubview:_alert];
     [_alert mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(_alertView).mas_offset(50);
-        make.right.equalTo(_alertView).mas_offset(-50);
+        make.left.equalTo(_alertView).mas_offset(15);
+        make.right.equalTo(_alertView).mas_offset(-15);
         make.center.equalTo(_alertView);
     }];
     
@@ -82,45 +84,51 @@ static LYJAlertView *_alertView;
         }];
         
         [contentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.equalTo(self.alert).mas_offset(20);
-            make.right.equalTo(self.alert).mas_offset(-20);
+            make.left.equalTo(self.alert).mas_offset(23);
+            make.right.equalTo(self.alert).mas_offset(-23);
             make.top.equalTo(titleLabel.mas_bottom).mas_offset(20);
         }];
     }else{
         [contentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.equalTo(self.alert).mas_offset(20);
-            make.right.equalTo(self.alert).mas_offset(-20);
-            make.top.equalTo(self.alert).mas_offset(40);
+            make.left.equalTo(self.alert).mas_offset(23);
+            make.right.equalTo(self.alert).mas_offset(-23);
+            make.top.equalTo(self.alert).mas_offset(30);
         }];
     }
     
+    UIButton *confirm = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
+        make.backgroundColor(RGB(1, 111, 255)).titleForState(@"确认", UIControlStateNormal).titleColorForState([UIColor whiteColor], UIControlStateNormal).titleFont([UIFont systemFontOfSize:16]).addAction(self, @selector(operationAction), UIControlEventTouchUpInside).addToSuperView(self.alert);
+    }];
+    confirm.layer.cornerRadius = 15.f;
+    confirm.clipsToBounds = YES;
+    [confirm mas_makeConstraints:^(MASConstraintMaker *make) {
+       
+        make.width.mas_equalTo(100);
+        make.height.mas_equalTo(34.5f);
+        make.top.equalTo(contentLabel.mas_bottom).mas_offset(40);
+        make.bottom.equalTo(self.alert).mas_offset(-30);
+        make.left.equalTo(self.alert).mas_offset(30);
+    }];
     
     UIButton *cancel = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
         make.backgroundColor(UIColorFromRGB(0xEFF0F4)).titleForState(@"取消", UIControlStateNormal).titleColorForState(RGB(153, 153, 153), UIControlStateNormal).titleFont([UIFont systemFontOfSize:16]).addAction(self, @selector(closeAction), UIControlEventTouchUpInside).addToSuperView(self.alert);
     }];
+    cancel.layer.cornerRadius = 15.f;
+    cancel.clipsToBounds = YES;
     [cancel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.mas_equalTo(90);
-        make.height.mas_equalTo(30);
-        make.top.equalTo(contentLabel.mas_bottom).mas_offset(40);
-        make.bottom.equalTo(self.alert).mas_offset(-25);
-        make.left.equalTo(self.alert).mas_offset(35);
+        make.width.mas_equalTo(100);
+        make.height.mas_equalTo(34.5f);
+        make.bottom.equalTo(self.alert).mas_offset(-30);
+        make.right.equalTo(self.alert).mas_offset(-30);
     }];
     
-    UIButton *confirm = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
-        make.backgroundColor(RGB(1, 111, 255)).titleForState(@"确定", UIControlStateNormal).titleColorForState([UIColor whiteColor], UIControlStateNormal).titleFont([UIFont systemFontOfSize:16]).addAction(self, @selector(operationAction), UIControlEventTouchUpInside).addToSuperView(self.alert);
-    }];
-    [confirm mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.mas_equalTo(90);
-        make.height.mas_equalTo(30);
-        make.bottom.equalTo(self.alert).mas_offset(-25);
-        make.right.equalTo(self.alert).mas_offset(-35);
-    }];
+   
     
     [self.window addSubview:_alertView];
     
     [self layoutIfNeeded];
-    cancel.layer.cornerRadius = 4.f;
-    confirm.layer.cornerRadius = 4.f;
+//    cancel.layer.cornerRadius = 4.f;
+//    confirm.layer.cornerRadius = 4.f;
     
     [UIView animateWithDuration:.25f animations:^{
         _alertView.alpha = 1.f;

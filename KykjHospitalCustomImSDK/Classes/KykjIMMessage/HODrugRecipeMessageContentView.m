@@ -32,7 +32,7 @@
     self.patientSex.image = message.extraModel.sex.intValue==2?[KykjImToolkit getImageResourceForName:@"PL_woman"]: [KykjImToolkit getImageResourceForName:@"PL_man_ic"];
     self.patientAge.text = [NSString stringWithFormat:@"%@岁",message.extraModel.age];
     self.lastDiagnose.text = message.extraModel.diagnose;
-    self.messageTypeLab.text = @"电子报告";
+    self.messageTypeLab.text = @"查看详情";
 }
 
 + (CGFloat)getContentViewSizeWith:(CGFloat)width message:(HOMedrMessage *)message{

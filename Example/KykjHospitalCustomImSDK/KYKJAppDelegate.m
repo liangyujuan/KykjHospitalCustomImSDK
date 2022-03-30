@@ -22,7 +22,7 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     [[UINavigationBar appearance] setBackgroundColor:[UIColor whiteColor]];
     _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//    _window.backgroundColor = colorBackground;
+    _window.backgroundColor = [UIColor whiteColor];
     
     TYMemberSearchViewController *vc = [[TYMemberSearchViewController alloc] init];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];

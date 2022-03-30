@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic) TRTCCloud *trtcCloud;
 
+@property (nonatomic, copy) NSString *countString;
+
 - (instancetype)initWithRoomId:(UInt32)roomId userId:(NSString *)userId;
 
 - (void)stopAndQuit;

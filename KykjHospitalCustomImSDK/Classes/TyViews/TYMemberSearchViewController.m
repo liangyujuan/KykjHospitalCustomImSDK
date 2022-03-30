@@ -20,6 +20,8 @@
 
 @property (nonatomic, strong) TYMemberModel *model;
 
+@property (nonatomic, assign) CGFloat keyboardHeight;
+
 @end
 
 @implementation TYMemberSearchViewController
@@ -31,26 +33,26 @@
     [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
 
+    [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [self.navigationController.navigationBar lt_reset];
+//    [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    self.title = @"健康问诊";
+    self.title = @"健康问诊";
     
-//    self.navigationController.navigationBarHidden = NO;
-    
+
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    self.navigationController.navigationBar.translucent = NO;
     self.view.backgroundColor = colorBackground;
-    [self setupNav];
     
-//    self.edgesForExtendedLayout = UIRectEdgeNone;
-//
-//    self.navigationController.navigationBar.translucent = NO;
+    [self setupNav];
     
 //    self.view.backgroundColor = RGB(249, 249, 249);
     [self setSubViews];
@@ -143,13 +145,15 @@
     
     [_textfield addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    
 }
 - (void)searchAction
 {
     if(![KykjImToolkit checkTelephone:_textfield.text]){
 //        [SVProgressHUD showInfoWithStatus:@"请输入正确的手机号"];
 //        [SVProgressHUD dismissWithDelay:1.5f];
-        [LeafNotification showInController:[KykjImToolkit getCurrentVC] withText:@"请输入正确的手机号"];
+        [LeafNotification showHint:@"请输入正确的手机号" yOffset:-ScreenHeight/2];
         return;
     }
     _searchButton.enabled = NO;
@@ -166,7 +170,7 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     if(![KykjImToolkit checkTelephone:_textfield.text]){
-        [LeafNotification showInController:[KykjImToolkit getCurrentVC] withText:@"请输入正确的手机号"];
+        [LeafNotification showHint:@"请输入正确的手机号" yOffset:-ScreenHeight/2];
         return NO;
     }
     [textField resignFirstResponder];
@@ -201,6 +205,7 @@
 
 - (void)requestMemberWithSearchString:(NSString*)searhString
 {
+    MBProgressHUDShowInThisView;
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
     [param setObject:@"dzService" forKey:@"service"];
     [param setObject:@"searchUserInfo" forKey:@"method"];
@@ -209,6 +214,7 @@
     @weakify(self)
     [HttpOperationManager HTTP_POSTWithParameters:param showAlert:NO success:^(id responseObject) {
       @strongify(self)
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         self.searchButton.enabled = YES;
         if (responseObject!=nil) {
 
@@ -224,25 +230,67 @@
                     [self.navigationController pushViewController:vc animated:YES];
                 }
                 else{
-                    [LeafNotification showInController:self withText:@"未查询到会员信息！"];
+                    [LeafNotification showHint:@"未查询到会员信息！" yOffset:-ScreenHeight/2];
                 }
             }else{
                 NSString *msgString = getSafeString(responseObject[@"info"]);
                 if (msgString.length > 0) {
-                    [LeafNotification showInController:self withText:msgString];
+                    [LeafNotification showHint:msgString yOffset:-ScreenHeight/2];
+    //                [LeafNotification showInController:weakself withText:msgString];
                 }else
-                    [LeafNotification showInController:self withText:@"系统错误，请稍后再试！"];
+                    [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:-ScreenHeight/2];
+    //                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
             }
      
             
         }
     } failure:^(NSError *error) {
         NSLog(@"error:%@",error.userInfo);
+        @strongify(self)
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         self.searchButton.enabled = YES;
-        [LeafNotification showInController:self withText:error.userInfo];
+        [LeafNotification showHint:@"网络连接失败" yOffset:-ScreenHeight/2];
     }];
 }
 
+#pragma mark- UIKeyboardWillChangeFrameNotification
+- (void)keyboardWillChangeFrame:(NSNotification *)notification
+{
+    UIEdgeInsets insets;
+    if (@available(iOS 11.0, *))
+    {
+        insets = [UIApplication sharedApplication].delegate.window.safeAreaInsets;
+    }
+    else
+    {
+        insets = UIEdgeInsetsZero;
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
+    
+        CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        _keyboardHeight = keyboardFrame.size.height;
+        
+        BOOL isKeyBoardHidden = ScreenHeight == keyboardFrame.origin.y;
+        
+        if (isKeyBoardHidden) {
+            [_searchButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.equalTo(self.view).mas_offset(15);
+                make.bottom.equalTo(self.view).mas_offset(-15-insets.bottom);
+                make.right.equalTo(self.view).mas_offset(-15);
+                make.height.mas_equalTo(49);
+            }];
+        }else{
+            [_searchButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.equalTo(self.view).mas_offset(15);
+                make.bottom.equalTo(self.view).mas_offset(-15-insets.bottom-self.keyboardHeight);
+                make.right.equalTo(self.view).mas_offset(-15);
+                make.height.mas_equalTo(49);
+            }];
+            
+        }
+    
+
+}
 
 /*
 #pragma mark - Navigation

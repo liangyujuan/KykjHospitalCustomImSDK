@@ -69,17 +69,18 @@
 - (instancetype)initWithOrderRecord:(YXOrderRecordModel *)orderRecordModel{
     self = [super init];
     if (self) {
-//        self.age = orderRecordModel.USER_AGE;
-//        self.dzId = orderRecordModel.DZ_ID;
-//        self.idCard = orderRecordModel.ID_CARD;
-//        self.name = orderRecordModel.USER_NAME;
-//        self.sex = orderRecordModel.SEX;
-//        self.status = orderRecordModel.STATUS;
-//        self.avatar = orderRecordModel.ICON_URL;
-//        self.srcId = orderRecordModel.DZ_ID;
-//        self.regWayCode = RegWayCode;
-//        self.staffId = system.loginUser.STAFF_ID;
-//        self.staffName = system.loginUser.STAFF_NAME;
+        self.age = orderRecordModel.USER_AGE;
+        self.dzId = orderRecordModel.DZ_ID;
+        self.idCard = orderRecordModel.ID_CARD;
+        self.name = orderRecordModel.USER_NAME;
+        self.sex = orderRecordModel.SEX;
+        self.status = orderRecordModel.STATUS;
+        self.avatar = orderRecordModel.ICON_URL;
+        self.srcId = orderRecordModel.DZ_ID;
+        self.regWayCode = RegWayCode;
+        self.staffId =orderRecordModel.STAFF_ID;
+        self.staffName = orderRecordModel.STAFF_NAME;
+        self.srcType = @"txt";
 //
         //定制类型(DZ_TS_TX号源提醒 DZ_ZX_TXT图文咨询,DZ_ZX_CALL电话咨询,DZ_FZ复诊)
 //        if ([orderRecordModel.DZ_TYPE isEqualToString:@"DZ_ZX_TXT"]) {
