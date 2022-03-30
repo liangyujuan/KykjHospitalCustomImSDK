@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'KykjHospitalCustomImSDK'
-  s.version          = '1.0.1'
-  s.summary          = 'A short summary of KykjHospitalCustomImSDK. 快医科技'
+  s.version          = '1.0.2'
+  s.summary          = 'KykjHospitalCustomImSDK is audio frequency and video sdk'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -17,13 +17,13 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
-  s.description      = 'A short description of KykjHospitalCustomImSDK. 快医科技'
+  s.description      = 'KykjHospitalCustomImSDK description'
 
   s.homepage         = 'https://github.com/liangyujuan/KykjHospitalCustomImSDK'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'liangyujuan' => '18730231873@163.com' }
-  s.source           = { :git => 'https://github.com/liangyujuan/KykjHospitalCustomImSDK.git', :tag => '1.0.1'}
+  s.source           = { :git => 'https://github.com/liangyujuan/KykjHospitalCustomImSDK.git', :tag => '1.0.2'}
 #s.source           = { :git => '/Users/liangyujuan/Documents/KykjHospitalCustomImSDK', :tag => '1.0.0'}
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
