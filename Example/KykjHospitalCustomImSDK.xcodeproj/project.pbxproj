@@ -546,7 +546,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = MFH447PL47;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 $(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KykjHospitalCustomImSDK/KykjHospitalCustomImSDK-Prefix.pch";
 				INFOPLIST_FILE = "KykjHospitalCustomImSDK/KykjHospitalCustomImSDK-Info.plist";
@@ -571,7 +570,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = MFH447PL47;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 $(inherited)";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "armv7 arm64";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KykjHospitalCustomImSDK/KykjHospitalCustomImSDK-Prefix.pch";
 				INFOPLIST_FILE = "KykjHospitalCustomImSDK/KykjHospitalCustomImSDK-Info.plist";
