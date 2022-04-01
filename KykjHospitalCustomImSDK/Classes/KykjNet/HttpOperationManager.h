@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "Factory.h"
-@import AFNetworking;
+//@import AFNetworking;
+#import <AFNetworking/AFNetworking.h>
+
+//@class AFHTTPSessionManager;
 
 //请求成功时的回调block
 typedef void (^getDataBlock)(id data);
