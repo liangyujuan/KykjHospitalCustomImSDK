@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'KykjHospitalCustomImSDK'
-  s.version          = '1.0.4'
+  s.version          = '1.0.5'
   s.summary          = 'KykjHospitalCustomImSDK is audio frequency and video sdk'
 
 # This description is used to generate tags and improve search results.
@@ -23,13 +23,13 @@ Pod::Spec.new do |s|
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'liangyujuan' => '18730231873@163.com' }
-  s.source           = { :git => 'https://github.com/liangyujuan/KykjHospitalCustomImSDK.git', :tag => '1.0.4'}
+  s.source           = { :git => 'https://github.com/liangyujuan/KykjHospitalCustomImSDK.git', :tag => '1.0.5'}
 #s.source           = { :git => '/Users/liangyujuan/Documents/KykjHospitalCustomImSDK', :tag => '1.0.0'}
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '10.0'
   
-  s.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
+#  s.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
 
   s.source_files = 'KykjHospitalCustomImSDK/Classes/**/*.{h,m}'
   
@@ -42,11 +42,12 @@ Pod::Spec.new do |s|
 #  'KykjHospitalCustomImSDK' => ['KykjHospitalCustomImSDK/KykjHospitalCustomImSDK.bundle']
 #}
 
- s.public_header_files = 'KykjHospitalCustomImSDK/Classes/Header/*.h'
+   s.public_header_files = 'KykjHospitalCustomImSDK/Classes/Header/*.h'
 
 #   s.public_header_files = 'Pod/Classes/**/*.h'
+
    
-   s.frameworks = 'UIKit', 'AVFoundation','Foundation'
+   s.frameworks = 'Foundation','UIKit','AVFoundation','CoreGraphics','ImageIO','QuartzCore'
    s.static_framework = true
    
    s.dependency 'RongCloudIM/IMLib', '~> 2.10.4'
