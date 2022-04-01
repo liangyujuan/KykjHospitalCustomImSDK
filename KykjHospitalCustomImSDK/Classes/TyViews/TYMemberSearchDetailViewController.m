@@ -15,6 +15,8 @@
 
 @interface TYMemberSearchDetailViewController ()
 
+@property (nonatomic, strong) UIView *bgView;
+
 @property (nonatomic, strong) UIImageView *headerImg;
 @property (nonatomic, strong) UILabel *userNameLabel;
 @property (nonatomic, strong) UILabel *userSexLabel;
@@ -36,6 +38,7 @@
     [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
 
+    [self requestMemberWithSearchString:self.model.homeTel];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -94,11 +97,11 @@
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
     
-    UIView *bgView = [[UIView alloc] init];
-    bgView.layer.cornerRadius = 10.f;
-    bgView.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:bgView];
-    [bgView mas_makeConstraints:^(MASConstraintMaker *make) {
+    _bgView = [[UIView alloc] init];
+    _bgView.layer.cornerRadius = 10.f;
+    _bgView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:_bgView];
+    [_bgView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.equalTo(self.view).mas_offset(15);
         make.right.equalTo(self.view).mas_offset(-15);
         make.height.mas_equalTo(70);
@@ -106,14 +109,14 @@
     
 //    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(requestGetMcDz)];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(videoAction)];
-    [bgView addGestureRecognizer:tap];
+    [_bgView addGestureRecognizer:tap];
     
     _headerImg = [[UIImageView alloc] init];
     [_headerImg sd_setImageWithURL:[NSURL URLWithString:_model.userIcon] placeholderImage:[KykjImToolkit getImageResourceForName:@"defaultPatientIcon"]];
-    [bgView addSubview:_headerImg];
+    [_bgView addSubview:_headerImg];
     [_headerImg mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.height.mas_equalTo(40);
-        make.left.top.equalTo(bgView).mas_offset(15);
+        make.left.top.equalTo(self.bgView).mas_offset(15);
     }];
 //    headerImg sd_setImageWithURL:<#(nullable NSURL *)#> placeholderImage:<#(nullable UIImage *)#>
     
@@ -122,40 +125,40 @@
 //    NSString * sex = _tyModel.USER_SEX.intValue==1?@"男":@"女";
     
     _userNameLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.textColor(RGB(51, 51, 51)).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(bgView);
+        make.textColor(RGB(51, 51, 51)).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(self.bgView);
     }];
     [_userNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.headerImg.mas_right).mas_offset(10);
-        make.top.equalTo(bgView).mas_offset(15);
+        make.top.equalTo(self.bgView).mas_offset(15);
         make.width.mas_lessThanOrEqualTo(ScreenWidth-310);
     }];
     
     _userSexLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.textColor(RGB(51, 51, 51)).font([UIFont systemFontOfSize:15]).addToSuperView(bgView);
+        make.textColor(RGB(51, 51, 51)).font([UIFont systemFontOfSize:15]).addToSuperView(self.bgView);
     }];
     [_userSexLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.userNameLabel.mas_right).mas_offset(10);
-        make.top.equalTo(bgView).mas_offset(15);
+        make.top.equalTo(self.bgView).mas_offset(15);
     }];
     
     _userAgeLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.textColor(RGB(51, 51, 51)).font([UIFont systemFontOfSize:15]).addToSuperView(bgView);
+        make.textColor(RGB(51, 51, 51)).font([UIFont systemFontOfSize:15]).addToSuperView(self.bgView);
     }];
     [_userAgeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.userSexLabel.mas_right).mas_offset(10);
-        make.top.equalTo(bgView).mas_offset(15);
+        make.top.equalTo(self.bgView).mas_offset(15);
     }];
     
     _isMyLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.text(@"[本人]").textColor(RGB(1, 111, 255)).font([UIFont boldSystemFontOfSize:15]).addToSuperView(bgView);
+        make.text(@"[本人]").textColor(RGB(1, 111, 255)).font([UIFont boldSystemFontOfSize:15]).addToSuperView(self.bgView);
     }];
     [_isMyLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.userAgeLabel.mas_right).mas_offset(10);
-        make.top.equalTo(bgView).mas_offset(15);
+        make.top.equalTo(self.bgView).mas_offset(15);
     }];
     
     _countLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
-        make.textColor(RGB(153, 153, 153)).numberOfLines(0).font([UIFont systemFontOfSize:12]).addToSuperView(bgView);
+        make.textColor(RGB(153, 153, 153)).numberOfLines(0).font([UIFont systemFontOfSize:12]).addToSuperView(self.bgView);
     }];
     [_countLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.userNameLabel);
@@ -166,10 +169,10 @@
     UIView *videoBgView = [[UIView alloc] init];
     videoBgView.backgroundColor = RGB(1, 111, 255);
     videoBgView.layer.cornerRadius = 10.f;
-    [bgView addSubview:videoBgView];
+    [_bgView addSubview:videoBgView];
     [videoBgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.equalTo(bgView);
-        make.right.equalTo(bgView).mas_offset(-12.5);
+        make.centerY.equalTo(self.bgView);
+        make.right.equalTo(self.bgView).mas_offset(-12.5);
         make.height.mas_equalTo(55);
         make.width.mas_equalTo(75);
     }];
@@ -209,7 +212,7 @@
     }];
     
     _videoingButton = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
-        make.titleForState(@"视频中",UIControlStateNormal).titleColorForState(RGB(1, 111, 255),UIControlStateNormal).titleFont([UIFont systemFontOfSize:14]).imageForState([KykjImToolkit getImageResourceForName:@"ty_videoing"],UIControlStateNormal).addToSuperView(bgView);
+        make.titleForState(@"视频中",UIControlStateNormal).titleColorForState(RGB(1, 111, 255),UIControlStateNormal).titleFont([UIFont systemFontOfSize:14]).imageForState([KykjImToolkit getImageResourceForName:@"ty_videoing"],UIControlStateNormal).addToSuperView(self.bgView);
     }];
     [_videoingButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.mas_equalTo(100);
@@ -219,6 +222,12 @@
     }];
     _videoingButton.hidden = YES;
     
+    [self refreshUI];
+
+}
+
+- (void)refreshUI
+{
     _userNameLabel.text = _model.nameCn.length>0 ? _model.nameCn : @"";
     _userSexLabel.text = [_model.gender isEqualToString:@"1"] ? @"男" : @"女";
     NSString *age = [KykjImToolkit getIdentityCardAge:_model.idCard].length>0 ? [NSString stringWithFormat:@"%@岁",[KykjImToolkit getIdentityCardAge:_model.idCard]] : @"";
@@ -228,7 +237,7 @@
 
     
     float bgH = [KykjImToolkit getStringSizeHeight:_userNameLabel.text withFont:[UIFont boldSystemFontOfSize:16] Andwidht:ScreenWidth-310];
-    [bgView mas_updateConstraints:^(MASConstraintMaker *make) {
+    [_bgView mas_updateConstraints:^(MASConstraintMaker *make) {
             make.height.mas_equalTo(bgH+15+40);
     }];
     
@@ -245,9 +254,9 @@
         _videoingButton.hidden = YES;
     }
     
-    [bgView layoutIfNeeded];
-
+    [_bgView layoutIfNeeded];
 }
+
 - (void)leftBarButtonItemPressed:(id)sender
 {
     [self.navigationController popViewControllerAnimated:YES];
@@ -256,7 +265,7 @@
 {
     if (_model.isInChatRoom.intValue == 1) {
 //        [LeafNotification showInController:self withText:@"当前会员正在视频中"];
-        [LeafNotification showHint:@"当前会员正在视频中" yOffset:100];
+        [LeafNotification showHint:@"您已在其他平台发起视频问诊" yOffset:100];
         return;
     }
     NSString *groupId = [NSString stringWithFormat:@"%@99999",_model.userId];
@@ -418,7 +427,53 @@
     }];
 }
 
+- (void)requestMemberWithSearchString:(NSString*)searhString
+{
+    MBProgressHUDShowInThisView;
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    [param setObject:@"dzService" forKey:@"service"];
+    [param setObject:@"searchUserInfo" forKey:@"method"];
+    [param setObject:searhString forKey:@"homeTel"];
+    
+    @weakify(self)
+    [HttpOperationManager HTTP_POSTWithParameters:param showAlert:NO success:^(id responseObject) {
+      @strongify(self)
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+      
+        if (responseObject!=nil) {
 
+//            system.TOKEN = getSafeString(responseObject[@"token"]);
+            if ([responseObject[@"result"] isEqualToString:@"success"]) {
+                TYMemberModel *temp = [[TYMemberModel alloc] init];
+                if (responseObject[@"rows"] != nil) {
+                    temp = [temp mj_setKeyValues:responseObject[@"rows"]];
+                    
+                    self.model = temp;
+                    [self refreshUI];
+                }
+                else{
+                    [LeafNotification showHint:@"未查询到会员信息！" yOffset:-ScreenHeight/2];
+                }
+            }else{
+                NSString *msgString = getSafeString(responseObject[@"info"]);
+                if (msgString.length > 0) {
+                    [LeafNotification showHint:msgString yOffset:-ScreenHeight/2];
+    //                [LeafNotification showInController:weakself withText:msgString];
+                }else
+                    [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:-ScreenHeight/2];
+    //                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
+            }
+     
+            
+        }
+    } failure:^(NSError *error) {
+        NSLog(@"error:%@",error.userInfo);
+        @strongify(self)
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+      
+        [LeafNotification showHint:@"网络连接失败" yOffset:-ScreenHeight/2];
+    }];
+}
 
 #pragma mark - Navigation
 

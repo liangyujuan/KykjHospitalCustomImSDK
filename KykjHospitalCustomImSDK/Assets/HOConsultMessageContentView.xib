@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -35,20 +36,20 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="PL_man_ic" translatesAutoresizingMaskIntoConstraints="NO" id="Mhi-95-phP">
-                    <rect key="frame" x="72" y="67.5" width="16" height="16"/>
+                    <rect key="frame" x="82" y="67.5" width="16" height="16"/>
                 </imageView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RsP-sm-1fT">
-                    <rect key="frame" x="93" y="67" width="26" height="17"/>
+                    <rect key="frame" x="113" y="67" width="26" height="17"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3岁" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C03-Wi-N5j">
                             <rect key="frame" x="3" y="1" width="20" height="15"/>
-                            <color key="backgroundColor" red="0.0" green="0.65098039220000004" blue="0.51372549020000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="0.0039215686269999999" green="0.43529411759999997" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" red="0.0" green="0.65098039220000004" blue="0.51372549020000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" red="0.0039215686269999999" green="0.43529411759999997" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstItem="C03-Wi-N5j" firstAttribute="leading" secondItem="RsP-sm-1fT" secondAttribute="leading" constant="3" id="8LW-7G-fnJ"/>
                         <constraint firstAttribute="bottom" secondItem="C03-Wi-N5j" secondAttribute="bottom" constant="1" id="FrD-V9-p7S"/>
@@ -266,10 +267,10 @@
                 <constraint firstItem="dH2-5H-yyg" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Vti-QZ-444"/>
                 <constraint firstItem="2W1-HF-b1C" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="18" id="YnU-DQ-vbV"/>
                 <constraint firstItem="gu7-5Y-gTw" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="axL-kE-YOJ"/>
-                <constraint firstItem="RsP-sm-1fT" firstAttribute="leading" secondItem="Mhi-95-phP" secondAttribute="trailing" constant="5" id="f9M-u8-9RU"/>
+                <constraint firstItem="RsP-sm-1fT" firstAttribute="leading" secondItem="Mhi-95-phP" secondAttribute="trailing" constant="15" id="f9M-u8-9RU"/>
                 <constraint firstAttribute="trailing" secondItem="gu7-5Y-gTw" secondAttribute="trailing" id="mNQ-VW-kOO"/>
                 <constraint firstAttribute="trailing" secondItem="7jH-8t-3o0" secondAttribute="trailing" id="sMQ-o6-YD3"/>
-                <constraint firstItem="Mhi-95-phP" firstAttribute="leading" secondItem="Neb-fl-iiF" secondAttribute="trailing" constant="5" id="u6T-3G-gPB"/>
+                <constraint firstItem="Mhi-95-phP" firstAttribute="leading" secondItem="Neb-fl-iiF" secondAttribute="trailing" constant="15" id="u6T-3G-gPB"/>
                 <constraint firstItem="Neb-fl-iiF" firstAttribute="top" secondItem="Pqr-gQ-Fp7" secondAttribute="bottom" constant="13" id="uj4-3h-w2z"/>
                 <constraint firstItem="Pqr-gQ-Fp7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="w1K-dc-mIU"/>
             </constraints>

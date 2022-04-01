@@ -111,18 +111,18 @@
         }
     }else{
 //        if (self.isObAndGy) {
-            if ([self.orderRecordModel.USER_AGE integerValue]>14) {
-                type = EMREditViewAdultWomanMonthliesType;
-            }else{
-                type = EMREditViewChildrenWomanMonthliesType;
-
-            }
-//        }else{
 //            if ([self.orderRecordModel.USER_AGE integerValue]>14) {
-//                type = EMREditViewAdultWomanNormalType;
+//                type = EMREditViewAdultWomanMonthliesType;
 //            }else{
-//                type = EMREditViewChildrenWomanNormalType;
+//                type = EMREditViewChildrenWomanMonthliesType;
+//
 //            }
+//        }else{
+            if ([self.orderRecordModel.USER_AGE integerValue]>14) {
+                type = EMREditViewAdultWomanNormalType;
+            }else{
+                type = EMREditViewChildrenWomanNormalType;
+            }
 //        }
     }
     self.type = type;

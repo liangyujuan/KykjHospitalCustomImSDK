@@ -20,12 +20,16 @@
 #import "YXPatientRecordsModel.h"
 #import "Factory.h"
 #import "MJExtension.h"
+#import "HOIMHelper.h"
 
 @interface HOIMGroupDetailViewController ()
 
+@property (nonatomic, strong) UIView *navBgView;
 @property (nonatomic, strong) UIButton * leftButton;
 @property (nonatomic, strong) UIButton * rightButton;
 @property (nonatomic, strong) UILabel *titleLabel;
+
+@property (nonatomic, strong) UIView *bottomBgView;
 
 @property (nonatomic, strong) UILabel *consultCuntLabel;
 
@@ -41,23 +45,31 @@
 
 @implementation HOIMGroupDetailViewController
 
+- (void)viewDidLayoutSubviews{
+    [super viewDidLayoutSubviews];
+   
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"kIMRCUnReadCountRefresh" object:nil];
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self.navigationController.navigationBar lt_reset];
-    [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
+    [self.navigationController.navigationBar lt_setBackgroundColor:[UIColor whiteColor]];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
-    [IQKeyboardManager sharedManager].enable = NO;
+    [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
+    self.navigationController.navigationBarHidden = YES;
     [self setupNav];
     [self scrollToBottomAnimated:YES];
+    [self requestMemberWithSearchString:self.model.homeTel];
    
 }
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:YES];
-    [self setupNav];
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
 }
+
 
 - (void)viewWillDisappear:(BOOL)animated
 {
@@ -75,11 +87,11 @@
    
     
     
-//    self.edgesForExtendedLayout = UIRectEdgeNone;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
 //    self.navigationController.navigationBar.translucent = NO;
     self.view.backgroundColor = colorBackground;
     
-    self.navigationItem.hidesBackButton = YES;
+//    self.navigationItem.hidesBackButton = YES;
     
     [self setupNav];
     
@@ -96,7 +108,9 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshRCKitDispatchMessageNotification:) name:RCKitDispatchMessageNotification object:nil];
    
-   
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imAgainConnect) name:@"kIMStatusChangeDrops" object:nil];
+
+    
     self.conversationMessageCollectionView.backgroundColor = colorBackground;
     
     [self registerClass:[HOConsultMessageCell class] forMessageClass:[HOConsultMessage class]];
@@ -119,26 +133,36 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             @strongify(self)
             [self setupNav];
-            [self scrollToBottomAnimated:YES];
+//            [self scrollToBottomAnimated:YES];
             
         });
         
     }
+}
+- (void)imAgainConnect
+{
+    [[HOIMHelper shareInstance] connectRongYunIMServerWithUserModel:self.model];
 }
 
 - (void)setupNav{
     
 //    self.titleLabel.textColor = [UIColor blackColor];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.leftButton];
+//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.leftButton];
+ 
 //
 //
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightButton];
-//
-    self.navigationItem.titleView = self.titleLabel;
+//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] style:UIBarButtonItemStylePlain target:nil action:@selector(leftBarButtonAction)];
+//    
+//    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] style:UIBarButtonItemStylePlain target:nil action:@selector(leftBarButtonAction)];
+    
+//    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightButton];
+////
+//    self.navigationItem.titleView = self.titleLabel;
 //    self.title = @"聊天室";
 //    self.navigationItem.titleView.tintColor = [UIColor blackColor];
     
+    self.navBgView.hidden = NO;
 }
 
 - (void)leftBarButtonAction
@@ -166,19 +190,7 @@
     }];
 }
 - (void)rightBarButtonItemPressed:(id)sender{
-//    HOIMDetailViewController * vc = [[HOIMDetailViewController alloc] init];
-//    vc.conversationType = self.conversationType;
-//    vc.targetId = @"17617119";
-//    RCUserInfo * userInfo = [[RCUserInfo alloc] init];
-//    userInfo.userId = @"17617119";
-//    userInfo.name = @"梁永清";
-//    userInfo.portraitUri = getImageAddress(_orderRecordModel.ICON_URL).absoluteString;
-//    vc.targetUserInfo = userInfo;
-// 
-//    vc.orderRecordModel = self.orderRecordModel;
-//
-//    [self.navigationController pushViewController:vc animated:YES];
-    
+
     TYHistoryReportListViewController *vc = [[TYHistoryReportListViewController alloc] init];
     vc.model = self.model;
     [self.navigationController pushViewController:vc animated:YES];
@@ -197,6 +209,15 @@
     }
     
     
+    _bottomBgView = [[UIView alloc] init];
+    _bottomBgView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:_bottomBgView];
+    [_bottomBgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.left.right.equalTo(self.view);
+        make.height.mas_equalTo(insets.bottom+115);
+    }];
+    
+    
     _videoButton = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
         make.titleForState(@"视频问诊",UIControlStateNormal).titleColorForState([UIColor whiteColor],UIControlStateNormal).titleFont([UIFont boldSystemFontOfSize:20]).backgroundColor(RGB(1, 111, 255)).imageForState([KykjImToolkit getImageResourceForName:@"ty_chat_video"],UIControlStateNormal).addAction(self,@selector(actionCreateOrder),UIControlEventTouchUpInside).addToSuperView(self.view);
     }];
@@ -211,6 +232,32 @@
     }];
     
     
+    
+    
+    _consultCuntLabel = [[UILabel alloc] init];
+    _consultCuntLabel.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:_consultCuntLabel];
+    [_consultCuntLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view);
+        make.bottom.equalTo(self.videoButton.mas_top).mas_offset(-15);
+        make.height.mas_equalTo(20);
+    }];
+  
+    [self.chatSessionInputBarControl setHidden:YES];
+    
+    [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view).mas_offset(NavStaHeight);
+//            make.bottom.equalTo(self.bottomListView.mas_top);
+        make.bottom.equalTo(self.consultCuntLabel.mas_top).mas_offset(-20);
+        make.left.right.equalTo(self.view);
+    }];
+    
+    [self refreshUI];
+   
+}
+
+- (void)refreshUI
+{
     NSMutableAttributedString *attStr1 = [[NSMutableAttributedString alloc] initWithString:@"可用次数" attributes:@{NSForegroundColorAttributeName:RGB(102, 102, 102),NSFontAttributeName:[UIFont boldSystemFontOfSize:15]}];
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc]init];
   
@@ -228,25 +275,9 @@
     [attStr3 addAttribute:NSParagraphStyleAttributeName value:style3 range:NSMakeRange(0,[attStr3 length])];
     [attStr1 insertAttributedString:attStr3 atIndex:attStr1.length];
     
-    _consultCuntLabel = [[UILabel alloc] init];
-    _consultCuntLabel.textAlignment = NSTextAlignmentCenter;
-    [self.view addSubview:_consultCuntLabel];
-    [_consultCuntLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(self.view);
-        make.bottom.equalTo(self.videoButton.mas_top).mas_offset(-15);
-        make.height.mas_equalTo(20);
-    }];
     _consultCuntLabel.attributedText = attStr1;
     
     
-    [self.chatSessionInputBarControl setHidden:YES];
-    
-    [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view);
-//            make.bottom.equalTo(self.bottomListView.mas_top);
-        make.bottom.equalTo(self.consultCuntLabel.mas_top).mas_offset(-20);
-        make.left.right.equalTo(self.view);
-    }];
     
     if (_model.countLeft.intValue>0) {
         _videoButton.enabled = YES;
@@ -348,7 +379,7 @@
 - (void)pushVideo:(YXOrderRecordModel*)orderModel
 {
     HOIMDetailViewController * vc = [[HOIMDetailViewController alloc] initWithConversationType:ConversationType_PRIVATE targetId:orderModel.STAFF_USER_ID];
-    vc.isNeedPopTargetViewController = YES;
+//    vc.isNeedPopTargetViewController = YES;
 //    vc.hidesBottomBarWhenPushed = YES;
     
     vc.model = self.model;
@@ -721,6 +752,56 @@
         [MBProgressHUD hideHUDForView:weakself.view animated:YES];
     }];
 }
+- (void)requestMemberWithSearchString:(NSString*)searhString
+{
+    MBProgressHUDShowInThisView;
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    [param setObject:@"dzService" forKey:@"service"];
+    [param setObject:@"searchUserInfo" forKey:@"method"];
+    [param setObject:searhString forKey:@"homeTel"];
+    
+    @weakify(self)
+    [HttpOperationManager HTTP_POSTWithParameters:param showAlert:NO success:^(id responseObject) {
+      @strongify(self)
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+       
+        if (responseObject!=nil) {
+
+//            system.TOKEN = getSafeString(responseObject[@"token"]);
+            if ([responseObject[@"result"] isEqualToString:@"success"]) {
+                TYMemberModel *temp = [[TYMemberModel alloc] init];
+                if (responseObject[@"rows"] != nil) {
+                    temp = [temp mj_setKeyValues:responseObject[@"rows"]];
+                    self.model = temp;
+                    
+                    [self refreshUI];
+                    
+                    [[HOIMHelper shareInstance] connectRongYunIMServerWithUserModel:self.model];
+                    
+                }
+                else{
+                    [LeafNotification showHint:@"未查询到会员信息！" yOffset:-ScreenHeight/2];
+                }
+            }else{
+                NSString *msgString = getSafeString(responseObject[@"info"]);
+                if (msgString.length > 0) {
+                    [LeafNotification showHint:msgString yOffset:-ScreenHeight/2];
+    //                [LeafNotification showInController:weakself withText:msgString];
+                }else
+                    [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:-ScreenHeight/2];
+    //                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
+            }
+     
+            
+        }
+    } failure:^(NSError *error) {
+        NSLog(@"error:%@",error.userInfo);
+        @strongify(self)
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        
+        [LeafNotification showHint:@"网络连接失败" yOffset:-ScreenHeight/2];
+    }];
+}
 
 #pragma mark - TRTCCallingDelegate
 
@@ -734,6 +815,14 @@
 - (void)onRecvC2CCustomMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId customData:(NSData *)data
 {
     
+}
+
+#pragma mark - RCConnectionStatusChangeDelegate
+- (void)onConnectionStatusChanged:(RCConnectionStatus)status{
+    NSLog(@"status == %ld", (long)status);
+    if(status == 11 || status == 6){
+        [[HOIMHelper shareInstance] connectRongYunIMServerWithUserModel:self.model];
+    }
 }
 
 - (UIView*)cerView
@@ -800,10 +889,52 @@
         _titleLabel.textColor = [UIColor blackColor];
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.font = [UIFont boldSystemFontOfSize:18];
+        self.navigationItem.titleView = _titleLabel;
     }
  
     return _titleLabel;
     
+}
+
+- (UIView*)navBgView
+{
+    if (!_navBgView) {
+        _navBgView = [[UIView alloc] init];
+        _navBgView.backgroundColor = [UIColor whiteColor];
+        [self.view addSubview:_navBgView];
+        [_navBgView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.right.top.equalTo(self.view);
+            make.height.mas_equalTo(NavStaHeight);
+        }];
+        
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, StatuBarHeight, ScreenWidth-240, 44)];
+        _titleLabel.text = @"聊天室";
+        _titleLabel.textColor = [UIColor blackColor];
+        _titleLabel.textAlignment = NSTextAlignmentCenter;
+        _titleLabel.font = [UIFont boldSystemFontOfSize:18];
+        [_navBgView addSubview:_titleLabel];
+      
+        
+        _rightButton = [[UIButton alloc] initWithFrame:CGRectMake(ScreenWidth-100, StatuBarHeight, 95, 44)];
+    //    [_right setImage:[UIImage imageNamed:@"M_setting_ic"] forState:UIControlStateNormal];
+        [_rightButton setTitle:@"历史报告" forState:UIControlStateNormal];
+        [_rightButton setTitleColor:RGB(1, 111, 255) forState:UIControlStateNormal];
+        _rightButton.titleLabel.font = [UIFont systemFontOfSize:14];
+        [_rightButton addTarget:self action:@selector(rightBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
+        
+        _leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_leftButton setFrame:CGRectMake(0, StatuBarHeight, 75, 44)];
+        [_leftButton setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
+
+        
+        [_leftButton addTarget:self action:@selector(leftBarButtonAction) forControlEvents:UIControlEventTouchUpInside];
+        
+        [_navBgView addSubview:_rightButton];
+        
+        [_navBgView addSubview:_leftButton];
+        
+    }
+    return _navBgView;
 }
 - (UIButton*)rightButton
 {
@@ -814,6 +945,7 @@
         [_rightButton setTitleColor:RGB(1, 111, 255) forState:UIControlStateNormal];
         _rightButton.titleLabel.font = [UIFont systemFontOfSize:14];
         [_rightButton addTarget:self action:@selector(rightBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
+//        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_rightButton];
        
     }
    
@@ -823,10 +955,16 @@
 - (UIButton*)leftButton
 {
     if (!_leftButton) {
-        _leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
+        _leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_leftButton setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-    //    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
+
+        
         [_leftButton addTarget:self action:@selector(leftBarButtonAction) forControlEvents:UIControlEventTouchUpInside];
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_leftButton];
+        [_leftButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(30, 44));
+        }];
+        
     }
 
     return _leftButton;

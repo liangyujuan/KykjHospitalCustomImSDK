@@ -3,7 +3,7 @@
 #import "HOConsultMessage.h"
 #import "HOPatientMessage.h"
 #import "HOMedrMessage.h"
-
+#import "HOIMHelper.h"
 #import "YXPatientRecordsModel.h"
 
 #import "HODrugRecipeMessageCell.h"
@@ -87,6 +87,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pictureAllow:) name:@"appRefreshLocation" object:nil];
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCallEnd) name:kIMStatusChangeDrops object:nil];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imAgainConnect) name:@"kIMStatusChangeDrops" object:nil];
     
     [KykjImToolkit checkMustLibraryAuthorityWithCallBack:^{
 
@@ -151,11 +152,17 @@
     }
 }
 
+- (void)imAgainConnect
+{
+    NSLog(@"im挤下线");
+    [[HOIMHelper shareInstance] connectRongYunIMServerWithUserModel:self.model];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self.navigationController.navigationBar lt_reset];
-    [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
+    [self.navigationController.navigationBar lt_setBackgroundColor:[UIColor whiteColor]];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
     
@@ -196,7 +203,7 @@
     [super viewDidLayoutSubviews];
     if (self.orginHeight == 0) {
         self.orginHeight = self.conversationMessageCollectionView.bounds.size.height;
-//        [[NSNotificationCenter defaultCenter] postNotificationName:kIMRCUnReadCountRefresh object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"kIMRCUnReadCountRefresh" object:nil];
     }
 }
 
@@ -204,6 +211,9 @@
     [_cerView removeFromSuperview];
     _cerView = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [_kyVideoVC stopAndQuit];
+//    [_kyVideoVC removeFromParentViewController];
+
 }
 
 - (UIModalPresentationStyle)modalPresentationStyle{
@@ -358,15 +368,21 @@
 }
 - (void)didSendMessage:(NSInteger)status content:(RCMessageContent *)messageContent
 {
-    NSString *groupId = [NSString stringWithFormat:@"%@99999",_orderRecordModel.USER_ID];
-    [[RCIM sharedRCIM] sendMessage:ConversationType_GROUP targetId:groupId content:messageContent pushContent:nil pushData:nil success:^(long messageId) {
-        NSLog(@"didSendMessage ConversationType_GROUP success");
-    } error:^(RCErrorCode nErrorCode, long messageId) {
-        NSLog(@"didSendMessage ConversationType_GROUP fail");
-    }];
+    if ([messageContent.senderUserInfo.userId isEqualToString:self.model.userId]) {
+        NSString *groupId = [NSString stringWithFormat:@"%@99999",_orderRecordModel.USER_ID];
+        [[RCIM sharedRCIM] sendMessage:ConversationType_GROUP targetId:groupId content:messageContent pushContent:nil pushData:nil success:^(long messageId) {
+            NSLog(@"didSendMessage ConversationType_GROUP success");
+        } error:^(RCErrorCode nErrorCode, long messageId) {
+            NSLog(@"didSendMessage ConversationType_GROUP fail");
+        }];
+    }
+    
 }
 - (RCMessageContent *)willSendMessage:(RCMessageContent *)messageCotent{
     messageCotent = [super willSendMessage:messageCotent];
+    
+    NSLog(@"messageCotent text:%@",messageCotent);
+    
     if (self.extraModel) {
          NSMutableDictionary * extraDict = [self.extraModel mj_keyValues];
          if ([messageCotent isKindOfClass:[RCInformationNotificationMessage class]]) {
@@ -379,6 +395,7 @@
         NSLog(@"messageCotent extraDict:%@",extraDict);
         
      }
+    
     return messageCotent;
 }
 
@@ -642,7 +659,7 @@
                 [self requestUpadateVideoInfoFunction:@"userCreate"];
 
 //                [self.navigationController addChildViewController:self.kyVideoVC];
-                
+//
                 [[UIApplication sharedApplication].delegate.window addSubview:self.kyVideoVC.view];
               
 //                [self.view addSubview:self.kyVideoVC.view];
@@ -751,7 +768,7 @@
         NSString * result = responseObject[@"result"];
         if([result isEqualToString:@"success"]){
 //            [[NSNotificationCenter defaultCenter] postNotificationName:kDZConsultStatusUpdateNoti object:tempDict[@"dzId"]];
-            [weakself sendTipsMessageForState:3];
+//            [weakself sendTipsMessageForState:3];
 //            [weakself requestGetMcDz];
             if (weakself.kyVideoVC!=nil) {
                 [weakself requestUpadateVideoInfoFunction:@"userLeft"];
@@ -791,11 +808,10 @@
         NSString * result = responseObject[@"result"];
         if([result isEqualToString:@"success"]){
             NSDictionary *rowsDic = [responseObject objectForKey:@"rows"];
-            if (rowsDic!=nil) {
+            if (![rowsDic isEqual:[NSNull null]]){
                 weakself.cerNo = rowsDic[@"PHYSICIAN_CERTIFICATE"];
             }
-            
-            
+       
         }else{
             NSString *msgString = getSafeString(responseObject[@"info"]);
             if (msgString.length > 0) {
@@ -973,12 +989,12 @@
                         
 
                     }
-                    else if([self.orderRecordModel.STATUS isEqualToString:@"F"]){
-
-//                        [self.chatSessionInputBarControl setHidden:YES];
-//                        self.endBottomView.hidden = NO;
-
-                    }
+//                    else if([self.orderRecordModel.STATUS isEqualToString:@"F"]){
+//
+////                        [self.chatSessionInputBarControl setHidden:YES];
+////                        self.endBottomView.hidden = NO;
+//
+//                    }
                     
                     else{
                         [self.navigationController popViewControllerAnimated:YES];

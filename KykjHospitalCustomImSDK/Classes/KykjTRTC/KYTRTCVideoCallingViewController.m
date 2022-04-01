@@ -111,6 +111,10 @@ static const NSInteger maxRemoteUserNum = 9;
     return  self;
 }
 
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:YES];
+    self.navigationController.navigationBarHidden = YES;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -122,9 +126,12 @@ static const NSInteger maxRemoteUserNum = 9;
     
     [self.timer fire];
     
+    
 //    [self.view sendSubviewToBack:self.view];
     // Do any additional setup after loading the view.
 }
+
+
 - (void)setSubViews
 {
     self.view.backgroundColor = [UIColor blackColor];
@@ -332,6 +339,10 @@ static const NSInteger maxRemoteUserNum = 9;
         _callTimeTimer = nil;
     }
     
+    
+    [[TRTCCalling shareInstance] setDelegate:nil];
+    
+    NSLog(@"KYTRTCVideoCallingViewController  dealloc");
 //    [self removeSimpleMsgListener];
 }
 //患者挂断
@@ -343,14 +354,25 @@ static const NSInteger maxRemoteUserNum = 9;
 //    } else {
 //        [_trtcCloud startLocalPreview:_isFrontCamera view:self.view];
 //    }
+    
+    
+    [_trtcCloud stopLocalPreview];
+    [_trtcCloud exitRoom];
+    [TRTCCloud destroySharedIntance];
+    [[TRTCCalling shareInstance] setDelegate:nil];
+    
+    [_timer invalidate];
+    _timer = nil;
+    [_callTimeTimer invalidate];
+    _callTimeTimer = nil;
+    
+    
     if ([self.delegate respondsToSelector:@selector(hungUpDelegateActionWithType:)]) {
-        [_trtcCloud stopLocalPreview];
-        [_trtcCloud exitRoom];
-        [TRTCCloud destroySharedIntance];
+       
 //        [self removeSimpleMsgListener];
         [self.delegate hungUpDelegateActionWithType:@"2"];
     }
-    
+   
 }
 //医生挂断
 - (void)hungUpDoctorAction
@@ -361,13 +383,25 @@ static const NSInteger maxRemoteUserNum = 9;
 //    } else {
 //        [_trtcCloud startLocalPreview:_isFrontCamera view:self.view];
 //    }
+    
+    
+    [_trtcCloud stopLocalPreview];
+    [_trtcCloud exitRoom];
+    [TRTCCloud destroySharedIntance];
+    [[TRTCCalling shareInstance] setDelegate:nil];
+    
+    [_timer invalidate];
+    _timer = nil;
+    [_callTimeTimer invalidate];
+    _callTimeTimer = nil;
+    
     if ([self.delegate respondsToSelector:@selector(hungUpDelegateActionWithType:)]) {
-        [_trtcCloud stopLocalPreview];
-        [_trtcCloud exitRoom];
-        [TRTCCloud destroySharedIntance];
+       
 //        [self removeSimpleMsgListener];
         [self.delegate hungUpDelegateActionWithType:@"1"];
     }
+    
+    
     
 }
 - (void)muteAction:(UIButton*)sender
@@ -528,16 +562,14 @@ static const NSInteger maxRemoteUserNum = 9;
 //    [self refreshRemoteVideoViews];
 }
 
-- (void)onError:(TXLiteAVError)errCode errMsg:(nullable NSString *)errMsg
-        extInfo:(nullable NSDictionary*)extInfo {
-//    self.curLastModel.code = errCode;
+- (void)onConnectionLost
+{
     if ([self.delegate respondsToSelector:@selector(hungUpDelegateActionWithType:)]) {
         [_trtcCloud stopLocalPreview];
         [_trtcCloud exitRoom];
         [TRTCCloud destroySharedIntance];
-        [self.delegate hungUpDelegateActionWithType:@"2"];
+        [self.delegate hungUpDelegateActionWithType:@"1"];
     }
-//    [self hangup];
 }
 - (void)refreshRemoteVideoViews {
 //    NSInteger index = 0;
@@ -605,7 +637,7 @@ static const NSInteger maxRemoteUserNum = 9;
     {
 //        [SVProgressHUD showInfoWithStatus:@"医生忙碌中，请稍后再发起视频！"];
 //        [SVProgressHUD dismissWithDelay:2.f];
-        [LeafNotification showHint:@"医生忙碌中，请稍后再发起视频！" yOffset:100];
+//        [LeafNotification showHint:@"医生忙碌中，请稍后再发起视频！" yOffset:100];
         [self performSelector:@selector(timeEnd) withObject:nil afterDelay:1.5f];
        
        
@@ -616,10 +648,13 @@ static const NSInteger maxRemoteUserNum = 9;
 {
     _callTimeCount++;
     if (_callTimeCount<60 && _callTimeCount>0) {
-        _callingTimeLabel.text = [NSString stringWithFormat:@"00:%02d",(int)(_callTimeCount)];
+        _callingTimeLabel.text = [NSString stringWithFormat:@"00:00:%02d",(int)(_callTimeCount)];
+    }
+    else if(_callTimeCount>=60 && _callTimeCount<3600){
+        _callingTimeLabel.text = [NSString stringWithFormat:@"00:%02d:%02d",(int)(_callTimeCount/60),(int)(_callTimeCount%60)];
     }
     else{
-        _callingTimeLabel.text = [NSString stringWithFormat:@"%02d:%02d",(int)(_callTimeCount/60),(int)(_callTimeCount%60)];
+        _callingTimeLabel.text = [NSString stringWithFormat:@"%02d:%02d:%02d",(int)(_callTimeCount/3600),(int)(_callTimeCount%3600/60),(int)(_callTimeCount%3600%60)];
     }
    
 }
@@ -628,6 +663,9 @@ static const NSInteger maxRemoteUserNum = 9;
     [self hungUpAction];
     [_timer invalidate];
     _timer = nil;
+    
+    [_callTimeTimer invalidate];
+    _callTimeTimer = nil;
     
 }
 #pragma mark - lazy load
@@ -660,6 +698,8 @@ static const NSInteger maxRemoteUserNum = 9;
     [self.trtcCloud stopLocalPreview];
     [self.trtcCloud exitRoom];
     [TRTCCloud destroySharedIntance];
+    _trtcCloud = nil;
+    [[TRTCCalling shareInstance] setDelegate:nil];
 //    [self removeSimpleMsgListener];
 }
 
@@ -681,8 +721,8 @@ static const NSInteger maxRemoteUserNum = 9;
 
 - (void)onRecvC2CTextMessage:(NSString *)msgID sendUserId:(NSString *)sendUserId text:(NSString *)text
 {
-    [LeafNotification showHint:@"医生忙碌中，请重新发起视频" yOffset:100];
     if ([text isEqualToString:@"医生忙碌中，请重新发起视频"]) {
+//        [LeafNotification showHint:@"医生忙碌中，请重新发起视频" yOffset:100];
         [self hungUpAction];
     }
 }
@@ -709,7 +749,6 @@ static const NSInteger maxRemoteUserNum = 9;
     
     
 }
-
 
 /*
 #pragma mark - Navigation

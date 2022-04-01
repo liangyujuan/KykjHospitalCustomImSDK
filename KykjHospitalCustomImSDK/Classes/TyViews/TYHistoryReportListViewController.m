@@ -70,7 +70,7 @@
     self.title = @"历史报告";
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.navigationController.navigationBar.translucent = NO;
+//    self.navigationController.navigationBar.translucent = NO;
     self.view.backgroundColor = colorBackground;
     
     [self setupNav];
