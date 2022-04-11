@@ -21,7 +21,6 @@
 #import <MBProgressHUD/MBProgressHUD.h>
 #import <SDWebImage/SDWebImage.h>
 
-#import "UINavigationBar+Awesome.h"
 #import "KykjImToolkit.h"
 
 #import "YXOrderRecordModel.h"

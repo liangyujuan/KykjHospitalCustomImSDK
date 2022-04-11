@@ -37,7 +37,7 @@
     [self.navigationController.navigationBar lt_reset];
     [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
-
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
     [self requestMemberWithSearchString:self.model.homeTel];
 }
 

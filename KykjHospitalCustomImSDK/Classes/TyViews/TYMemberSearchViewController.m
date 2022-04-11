@@ -29,18 +29,22 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
     [self.navigationController.navigationBar lt_reset];
     [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
 
+//    self.navigationController.navigationBarHidden = YES
     [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
+    
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
     [self.navigationController.navigationBar lt_reset];
-//    [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
 }
 
 - (void)viewDidLoad {

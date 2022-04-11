@@ -54,9 +54,9 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController.navigationBar lt_reset];
-    [self.navigationController.navigationBar lt_setBackgroundColor:[UIColor whiteColor]];
-    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+//    [self.navigationController.navigationBar lt_reset];
+//    [self.navigationController.navigationBar lt_setBackgroundColor:[UIColor whiteColor]];
+//    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
     self.navigationController.navigationBarHidden = YES;
     [self setupNav];
@@ -74,7 +74,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.navigationController.navigationBar lt_reset];
+//    [self.navigationController.navigationBar lt_reset];
 //    [IQKeyboardManager sharedManager].enable = YES;
 }
 

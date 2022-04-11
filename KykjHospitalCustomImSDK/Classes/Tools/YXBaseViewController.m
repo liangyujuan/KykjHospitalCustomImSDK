@@ -97,9 +97,9 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController.navigationBar lt_reset];
-    [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
-    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+//    [self.navigationController.navigationBar lt_reset];
+//    [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
+//    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     
 }
 
@@ -107,7 +107,7 @@
 {
     [super viewWillDisappear:animated];
     
-    [self.navigationController.navigationBar lt_reset];
+//    [self.navigationController.navigationBar lt_reset];
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{

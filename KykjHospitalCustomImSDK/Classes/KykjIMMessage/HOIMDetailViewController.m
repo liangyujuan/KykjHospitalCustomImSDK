@@ -11,7 +11,7 @@
 #import "YXOrderRecordModel.h"
 #import "HOIMConsultMsgExtraModel.h"
 
-#import "UINavigationController+FDFullscreenPopGesture.h"
+//#import "UINavigationController+FDFullscreenPopGesture.h"
 
 #import "KYTRTCVideoCallingViewController.h"
 #import "GenerateTestUserSig.h"
@@ -53,8 +53,11 @@
 //    self.title = self.targetUserInfo.name;
     
 //    if (self.isNeedPopTargetViewController) {
-        self.fd_interactivePopDisabled = YES;
+//        self.fd_interactivePopDisabled = YES;
 //    }
+    id traget = self.navigationController.interactivePopGestureRecognizer.delegate;
+       UIPanGestureRecognizer * pan = [[UIPanGestureRecognizer alloc]initWithTarget:traget action:nil];
+       [self.view addGestureRecognizer:pan];
     
 //    self.navigationController.navigationBarHidden = NO;
     
