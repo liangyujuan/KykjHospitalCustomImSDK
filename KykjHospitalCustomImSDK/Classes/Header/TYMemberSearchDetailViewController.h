@@ -7,14 +7,13 @@
 //
 
 #import "YXBaseViewController.h"
-#import "TYMemberModel.h"
-#import "YXOrderRecordModel.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TYMemberSearchDetailViewController : YXBaseViewController
 
-@property (nonatomic, strong) TYMemberModel *model;
+@property (nonatomic, copy) NSString *searchString;
 
 @end
 

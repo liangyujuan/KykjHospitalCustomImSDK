@@ -11,6 +11,14 @@
 
 @interface YXBaseViewController ()
 
+@property (nonatomic, strong) UIView *stateBgView;
+
+@property (nonatomic, strong) UIButton *leftButton;
+
+@property (nonatomic, strong) UIButton *rightButton;
+
+@property (nonatomic, strong) UILabel *titleLabel;
+
 @property (nonatomic, strong) UIButton *baseRightButton;
 
 /**
@@ -29,11 +37,36 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    UIButton * left = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
+    self.stateBgView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, StatuBarHeight)];
+    self.stateBgView.backgroundColor = colorBackground;
+    [self.view addSubview:self.stateBgView];
+    
+    self.navBarView = [[UIView alloc] initWithFrame:CGRectMake(0, StatuBarHeight, ScreenWidth, 44)];
+    self.navBarView.backgroundColor = colorBackground;
+    [self.view addSubview:self.navBarView];
+
+    
+    _leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 80, 44)];
 //    [left setImage:[UIImage imageNamed:@"arrow_left"] forState:UIControlStateNormal];
-    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-    [left addTarget:self action:@selector(leftItemSelector) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:left];
+    [_leftButton setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
+    [_leftButton addTarget:self action:@selector(leftItemSelector) forControlEvents:UIControlEventTouchUpInside];
+    [self.navBarView addSubview:_leftButton];
+    
+    
+    _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake((ScreenWidth-200)/2, 0, ScreenWidth-200, 44)];
+    _titleLabel.text = @"";
+    _titleLabel.textColor = [UIColor blackColor];
+    _titleLabel.textAlignment = NSTextAlignmentCenter;
+    _titleLabel.font = [UIFont boldSystemFontOfSize:18];
+    [self.navBarView addSubview:_titleLabel];
+    
+    _rightButton = [[UIButton alloc] initWithFrame:CGRectMake(ScreenWidth-100, 0, 100, 44)];
+//    [_right setImage:[UIImage imageNamed:@"M_setting_ic"] forState:UIControlStateNormal];
+    [_rightButton setTitle:@"" forState:UIControlStateNormal];
+    [_rightButton setTitleColor:RGB(1, 111, 255) forState:UIControlStateNormal];
+    _rightButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [_rightButton addTarget:self action:@selector(rightBarButtonItemPressed) forControlEvents:UIControlEventTouchUpInside];
+    [self.navBarView addSubview:_rightButton];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -57,6 +90,11 @@
         [self popTargetViewController];
     }else
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)rightBarButtonItemPressed
+{
+    
 }
 
 - (void)popTargetViewController{
@@ -128,4 +166,31 @@
     
     return UIStatusBarStyleDefault;
 }
+
+- (void)setTitle:(NSString *)title
+{
+    _titleLabel.text = title;
+}
+- (void)setNavBgColor:(UIColor *)navBgColor
+{
+    _navBarView.backgroundColor = navBgColor;
+    _stateBgView.backgroundColor = navBgColor;
+}
+- (void)setLeftTitle:(NSString *)leftTitle
+{
+    [_leftButton setTitle:leftTitle forState:UIControlStateNormal];
+}
+- (void)setRightTitle:(NSString *)rightTitle
+{
+    [_rightButton setTitle:rightTitle forState:UIControlStateNormal];
+}
+- (void)setLeftImage:(NSString *)leftImage
+{
+   [_leftButton setImage:[KykjImToolkit getImageResourceForName:leftImage] forState:UIControlStateNormal];
+}
+- (void)setRightImage:(NSString *)rightImage
+{
+    [_rightButton setImage:[KykjImToolkit getImageResourceForName:rightImage] forState:UIControlStateNormal];
+}
+
 @end

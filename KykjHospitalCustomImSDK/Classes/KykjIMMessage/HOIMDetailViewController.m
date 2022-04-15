@@ -31,6 +31,8 @@
 
 @property (nonatomic, strong) KYTRTCVideoCallingViewController *kyVideoVC;
 
+@property (nonatomic, strong) UIView *navBarView;
+@property (nonatomic, strong) UIView *stateBgView;
 @property (nonatomic, strong) UIButton * leftButton;
 @property (nonatomic, strong) UIButton * rightButton;
 @property (nonatomic, strong) UILabel *titleLabel;
@@ -112,7 +114,7 @@
     
 //        self.endBottomView.hidden = YES;
     [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view);
+        make.top.equalTo(self.navBarView.mas_bottom);
         make.bottom.equalTo(self.chatSessionInputBarControl.inputTextView.mas_top).mas_offset(-20);
         make.right.left.equalTo(self.view);
     }];
@@ -164,35 +166,20 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController.navigationBar lt_reset];
-    [self.navigationController.navigationBar lt_setBackgroundColor:[UIColor whiteColor]];
-    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+//    [self.navigationController.navigationBar lt_reset];
+//    [self.navigationController.navigationBar lt_setBackgroundColor:[UIColor whiteColor]];
+//    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    
     [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
-    
-    [self setupNav];
    
-    
-//    if (self.kyVideoVC!=nil) {
-//        [self setupNav];
-//        self.kyVideoVC.view.transform = CGAffineTransformIdentity;
-        
-//        [self.kyVideoVC.view mas_remakeConstraints:^(MASConstraintMaker *make) {
-//
-//            make.size.left.equalTo(self.navigationController.view);
-//            make.top.equalTo(self.navigationController.view);
-//        }];
-//        self.kyVideoVC.view.transform = CGAffineTransformScale(CGAffineTransformIdentity,  .25f, .2f);
-        
-//        [self.navigationController.view bringSubviewToFront:self.kyVideoVC.view];
-//    }
-   
-//    [self refreshNav];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.navigationController.navigationBar lt_reset];
+//    [self.navigationController.navigationBar lt_reset];
     [IQKeyboardManager sharedManager].enableAutoToolbar = YES;
     
 }
@@ -225,13 +212,44 @@
 
 - (void)setupNav{
     
+    self.stateBgView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, StatuBarHeight)];
+    self.stateBgView.backgroundColor = colorBackground;
+    [self.view addSubview:self.stateBgView];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.leftButton];
+    self.navBarView = [[UIView alloc] initWithFrame:CGRectMake(0, StatuBarHeight, ScreenWidth, 44)];
+    self.navBarView.backgroundColor = colorBackground;
+    [self.view addSubview:self.navBarView];
+    
+    _leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 80, 44)];
+//    [left setImage:[UIImage imageNamed:@"arrow_left"] forState:UIControlStateNormal];
+    [_leftButton setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
+    [_leftButton addTarget:self action:@selector(leftBarButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.navBarView addSubview:_leftButton];
     
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightButton];
-
-    self.navigationItem.titleView = self.titleLabel;
+    _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake((ScreenWidth-200)/2, 0, ScreenWidth-200, 44)];
+    _titleLabel.text = @"";
+    _titleLabel.textColor = [UIColor blackColor];
+    _titleLabel.textAlignment = NSTextAlignmentCenter;
+    _titleLabel.font = [UIFont boldSystemFontOfSize:18];
+    [self.navBarView addSubview:_titleLabel];
+    
+    _rightButton = [[UIButton alloc] initWithFrame:CGRectMake(ScreenWidth-100, 0, 100, 44)];
+//    [_right setImage:[UIImage imageNamed:@"M_setting_ic"] forState:UIControlStateNormal];
+    [_rightButton setTitle:@"历史报告" forState:UIControlStateNormal];
+    [_rightButton setTitleColor:RGB(1, 111, 255) forState:UIControlStateNormal];
+    _rightButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [_rightButton addTarget:self action:@selector(rightBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [self.navBarView addSubview:_rightButton];
+    
+//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.leftButton];
+//
+//
+//    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightButton];
+//
+//    self.navigationItem.titleView = self.titleLabel;
+    
+    
     
 }
 
@@ -270,7 +288,7 @@
             [self.chatSessionInputBarControl setHidden:NO];
     //        self.endBottomView.hidden = YES;
             [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.top.equalTo(self.view);
+                make.top.equalTo(self.navBarView.mas_bottom);
                 make.bottom.equalTo(self.chatSessionInputBarControl.inputTextView.mas_top).mas_offset(-20);
                 make.right.left.equalTo(self.view);
             }];
@@ -280,7 +298,7 @@
             [self.chatSessionInputBarControl setHidden:YES];
     //        self.endBottomView.hidden = NO;
             [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.top.equalTo(self.view);
+                make.top.equalTo(self.navBarView.mas_bottom);
                 make.bottom.equalTo(self.view).mas_offset(-20);
                 make.right.left.equalTo(self.view);
             }];
@@ -303,7 +321,7 @@
     
     [self setupPluginBoard];
     
-    [self setupNav];
+    [self refreshNav];
     
 //    [self.conversationMessageCollectionView layoutIfNeeded];
 }
@@ -1241,40 +1259,6 @@
         }];
     }
     return _endBottomView;
-}
-- (UILabel*)titleLabel
-{
-    if (!_titleLabel) {
-        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-160, 44)];
-        _titleLabel.text = @"聊天室";
-        _titleLabel.textColor = [UIColor blackColor];
-        _titleLabel.textAlignment = NSTextAlignmentCenter;
-        _titleLabel.font = [UIFont boldSystemFontOfSize:18];
-    }
-    return _titleLabel;
-    
-}
-- (UIButton*)rightButton
-{
-    if (!_rightButton) {
-        _rightButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-    //    [_right setImage:[UIImage imageNamed:@"M_setting_ic"] forState:UIControlStateNormal];
-        [_rightButton setTitle:@"历史报告" forState:UIControlStateNormal];
-        [_rightButton setTitleColor:RGB(1, 111, 255) forState:UIControlStateNormal];
-        _rightButton.titleLabel.font = [UIFont systemFontOfSize:14];
-        [_rightButton addTarget:self action:@selector(rightBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return _rightButton;
-}
-- (UIButton*)leftButton
-{
-    if (!_leftButton) {
-        _leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-        [_leftButton setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-    //    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-        [_leftButton addTarget:self action:@selector(leftBarButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return _leftButton;
 }
 @end
 

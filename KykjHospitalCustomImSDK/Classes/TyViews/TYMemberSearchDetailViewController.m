@@ -12,10 +12,14 @@
 #import "Factory.h"
 #import "HOIMHelper.h"
 #import "MJExtension.h"
+#import "TYMemberModel.h"
+#import "YXOrderRecordModel.h"
 
 @interface TYMemberSearchDetailViewController ()
 
 @property (nonatomic, strong) UIView *bgView;
+
+@property (nonatomic, strong) UIImageView *noDataBgView;
 
 @property (nonatomic, strong) UIImageView *headerImg;
 @property (nonatomic, strong) UILabel *userNameLabel;
@@ -27,6 +31,8 @@
 
 @property (nonatomic, strong) UIButton *videoingButton;
 
+@property (nonatomic, strong) TYMemberModel *model;
+
 @end
 
 @implementation TYMemberSearchDetailViewController
@@ -34,17 +40,21 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController.navigationBar lt_reset];
-    [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
-    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [self requestMemberWithSearchString:self.model.homeTel];
+//    [self.navigationController.navigationBar lt_reset];
+//    [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
+//    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+//    [self.navigationController setNavigationBarHidden:NO animated:YES];
+//    [self requestMemberWithSearchString:self.model.homeTel];
+    
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.navigationController.navigationBar lt_reset];
+//    [self.navigationController.navigationBar lt_reset];
+    
+    
 }
 
 - (void)viewDidLoad {
@@ -54,11 +64,11 @@
     
 //    self.edgesForExtendedLayout = UIRectEdgeNone;
 //
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.navigationController.navigationBar.translucent = NO;
+//    self.edgesForExtendedLayout = UIRectEdgeNone;
+//    self.navigationController.navigationBar.translucent = NO;
     self.view.backgroundColor = colorBackground;
     
-    [self setupNav];
+//    [self setupNav];
     
     
 //
@@ -67,25 +77,39 @@
 //    self.view.backgroundColor = RGB(249, 249, 249);
 
     [self setSubViews];
-    [self requestLoginIm:self.model];
+    
+    if([KykjImToolkit isStringBlank:self.searchString]){
+//        [SVProgressHUD showInfoWithStatus:@"请输入正确的手机号"];
+//        [SVProgressHUD dismissWithDelay:1.5f];
+        [LeafNotification showHint:@"暂无数据" yOffset:-ScreenHeight/2];
+        
+        _bgView.hidden = YES;
+        _noDataBgView.hidden = NO;
+        
+    }else{
+        [self requestMemberWithSearchString:self.searchString];
+    }
     // Do any additional setup after loading the view.
 }
-- (void)setupNav{
-    UIButton * left = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-    [left addTarget:self action:@selector(leftBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:left];
-    
-
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-160, 44)];
-    titleLabel.text = @"健康问诊";
-    titleLabel.textColor = [UIColor blackColor];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.font = [UIFont boldSystemFontOfSize:18];
-    self.navigationItem.titleView = titleLabel;
-}
+//- (void)setupNav{
+//    UIButton * left = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
+//    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
+//    [left addTarget:self action:@selector(leftBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
+//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:left];
+//
+//
+//    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-160, 44)];
+//    titleLabel.text = @"健康问诊";
+//    titleLabel.textColor = [UIColor blackColor];
+//    titleLabel.textAlignment = NSTextAlignmentCenter;
+//    titleLabel.font = [UIFont boldSystemFontOfSize:18];
+//    self.navigationItem.titleView = titleLabel;
+//}
 - (void)setSubViews
 {
+    self.title = @"健康问诊";
+    self.navBgColor = colorBackground;
+    
     UIEdgeInsets insets;
     if (@available(iOS 11.0, *))
     {
@@ -102,10 +126,12 @@
     _bgView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:_bgView];
     [_bgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.equalTo(self.view).mas_offset(15);
+        make.top.equalTo(self.navBarView.mas_bottom).mas_offset(15);
+        make.left.equalTo(self.view).mas_offset(15);
         make.right.equalTo(self.view).mas_offset(-15);
         make.height.mas_equalTo(70);
     }];
+    _bgView.hidden = YES;
     
 //    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(requestGetMcDz)];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(videoAction)];
@@ -118,11 +144,6 @@
         make.width.height.mas_equalTo(40);
         make.left.top.equalTo(self.bgView).mas_offset(15);
     }];
-//    headerImg sd_setImageWithURL:<#(nullable NSURL *)#> placeholderImage:<#(nullable UIImage *)#>
-    
-//    self.userName.text = _tyModel.USER_NAME;
-//    self.userAge.text = [NSString stringWithFormat:@"%@岁",_tyModel.USER_AGE];
-//    NSString * sex = _tyModel.USER_SEX.intValue==1?@"男":@"女";
     
     _userNameLabel = [UILabel makeLabel:^(LabelMaker * _Nonnull make) {
         make.textColor(RGB(51, 51, 51)).numberOfLines(0).font([UIFont boldSystemFontOfSize:16]).addToSuperView(self.bgView);
@@ -180,20 +201,6 @@
    
     
     _videoImg = [[UIImageView alloc] init];
-    
-    
-//    NSString *path = [[NSBundle mainBundle] pathForResource:@"KykjHospitalCustomImSDK" ofType:@"bundle"];
-//    NSBundle *bundle = [NSBundle bundleWithPath:path];
-//    NSString *file = [bundle pathForResource:@"arrow_left" ofType:@"png"];
-//    UIImage *img = [UIImage imageWithContentsOfFile:file];
-    
-    
-//    NSString *path = [[NSBundle mainBundle] pathForResource:@"KykjHospitalCustomImSDK.bundle" ofType:nil];
-//    NSBundle *bundle = [NSBundle bundleWithPath:path];
-//
-//    _videoImg.image = [UIImage imageNamed:@"ty_member_video" inBundle:bundle compatibleWithTraitCollection:nil];
-    
-//
 
     _videoImg.image = [KykjImToolkit getImageResourceForName:@"ty_member_video"];
     [videoBgView addSubview:_videoImg];
@@ -221,6 +228,18 @@
         make.right.equalTo(videoBgView.mas_left);
     }];
     _videoingButton.hidden = YES;
+    
+    _noDataBgView = [[UIImageView alloc] init];
+
+    _noDataBgView.image = [KykjImToolkit getImageResourceForName:@"no_data_bg"];
+    [self.view addSubview:_noDataBgView];
+    [_noDataBgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(ScreenWidth);
+        make.height.mas_equalTo(ScreenHeight);
+        make.top.equalTo(self.navBarView.mas_bottom);
+        make.centerX.equalTo(self.view);
+    }];
+    _noDataBgView.hidden = YES;
     
     [self refreshUI];
 
@@ -327,47 +346,9 @@
 
 - (void)requestLoginIm:(TYMemberModel*)model
 {
-//    NSDictionary *dic = [NSDictionary dictionaryWithObjectsAndKeys:model.userId,@"userId",model.ryToken,@"token", nil];
-//    [system saveRongYunInfo:[NSMutableDictionary dictionaryWithDictionary:dic]];
     [[HOIMHelper shareInstance] connectRongYunIMServerWithUserModel:model];
 }
-//- (void)requestDzid
-//{
-//    NSMutableDictionary *param = [NSMutableDictionary dictionary];
-//    [param setObject:@"dzService" forKey:@"service"];
-//    [param setObject:@"getLatestConsult" forKey:@"method"];
-//    [param setObject:self.model.userId forKey:@"userId"];
-//    [param setObject:[[SystemHelper shareInstance] getUniqueStrByUUID] forKey:@"uuid"];
-//
-//
-//    [HttpOperationManager HTTP_POSTWithParameters:param showAlert:NO success:^(id responseObject) {
-//
-//
-//            if ([responseObject[@"result"] isEqualToString:@"success"]) {
-//                NSDictionary *dzDic = [responseObject objectForKey:@"dzInfo"];
-//                if(dzDic!=nil){
-//                    NSString *dzId = [dzDic objectForKey:@"dzId"];
-//                    if(dzId.length>0){
-//                        [self videoAction:dzId];
-//                    }else{
-//                        [self videoAction:@""];
-//                    }
-//                }else{
-//                    [self videoAction:@""];
-//                }
-//            }else{
-//                NSString *msgString = getSafeString(responseObject[@"info"]);
-//                if (msgString.length > 0) {
-//                    [LeafNotification showInController:self withText:msgString];
-//                }else
-//                    [LeafNotification showInController:self withText:@"系统错误，请稍后再试！"];
-//            }
-//    } failure:^(NSError *error) {
-//        CXTLog(@"error:%@",error.userInfo);
-//
-//        [LeafNotification showInController:[KYToolKit getCurrentVC] withText:error.userInfo];
-//    }];
-//}
+
 
 - (void)requestGetMcDz{
     
@@ -439,29 +420,39 @@
     [HttpOperationManager HTTP_POSTWithParameters:param showAlert:NO success:^(id responseObject) {
       @strongify(self)
         [MBProgressHUD hideHUDForView:self.view animated:YES];
-      
+       
         if (responseObject!=nil) {
 
 //            system.TOKEN = getSafeString(responseObject[@"token"]);
             if ([responseObject[@"result"] isEqualToString:@"success"]) {
-                TYMemberModel *temp = [[TYMemberModel alloc] init];
+                
                 if (responseObject[@"rows"] != nil) {
+                    TYMemberModel *temp = [[TYMemberModel alloc] init];
                     temp = [temp mj_setKeyValues:responseObject[@"rows"]];
-                    
+
                     self.model = temp;
+                    self.bgView.hidden = NO;
+                    self.noDataBgView.hidden = YES;
+                    
                     [self refreshUI];
+
+                    [self requestLoginIm:self.model];
                 }
                 else{
                     [LeafNotification showHint:@"未查询到会员信息！" yOffset:-ScreenHeight/2];
+                    self.bgView.hidden = YES;
+                    self.noDataBgView.hidden = NO;
                 }
             }else{
+                self.bgView.hidden = YES;
+                self.noDataBgView.hidden = NO;
                 NSString *msgString = getSafeString(responseObject[@"info"]);
                 if (msgString.length > 0) {
                     [LeafNotification showHint:msgString yOffset:-ScreenHeight/2];
     //                [LeafNotification showInController:weakself withText:msgString];
                 }else
                     [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:-ScreenHeight/2];
-    //                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
+
             }
      
             

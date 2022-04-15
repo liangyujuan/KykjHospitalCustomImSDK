@@ -30,8 +30,52 @@
 
 @implementation TYHistoryReportListViewController
 
-- (void)loadView{
-    [super loadView];
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+//    self.edgesForExtendedLayout = UIRectEdgeNone;
+//
+
+    self.title = @"历史报告";
+    self.navBgColor = colorBackground;
+    
+//    self.edgesForExtendedLayout = UIRectEdgeNone;
+//    self.navigationController.navigationBar.translucent = NO;
+    self.view.backgroundColor = colorBackground;
+    
+    self.arrayPatientRecords = [NSMutableArray array];
+
+    [self setSubViews];
+    [self setupTableView];
+    
+    if(self.model.userId!=nil){
+        [self.tableView.mj_header beginRefreshing];
+    }
+    
+    self.tableView.ly_emptyView = [LYEmptyView emptyViewWithImageStr:@"noMoreData_caseRecord" titleStr:@"暂无记录" detailStr:nil];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+//    [self.navigationController.navigationBar lt_reset];
+//    [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
+//    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+//    [self.navigationController.navigationBar lt_reset];
+}
+
+- (void)leftItemSelector
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)setSubViews
+{
     [self setupHeaderView];
     UITableView *table = [[UITableView alloc] init];
     
@@ -61,69 +105,6 @@
     }
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-//    self.edgesForExtendedLayout = UIRectEdgeNone;
-//
-
-    self.title = @"历史报告";
-    
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-//    self.navigationController.navigationBar.translucent = NO;
-    self.view.backgroundColor = colorBackground;
-    
-    [self setupNav];
-    
-    self.arrayPatientRecords = [NSMutableArray array];
-//    [self requetGetCaseRecords];
-    [self setupTableView];
-    
-    if(self.model.userId!=nil){
-        [self.tableView.mj_header beginRefreshing];
-    }
-    
-    
-    
-    self.tableView.ly_emptyView = [LYEmptyView emptyViewWithImageStr:@"noMoreData_caseRecord" titleStr:@"暂无记录" detailStr:nil];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [self.navigationController.navigationBar lt_reset];
-    [self.navigationController.navigationBar lt_setBackgroundColor:colorBackground];
-    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    [self.navigationController.navigationBar lt_reset];
-}
-
-- (void)setupNav{
-    
-    UIButton * left = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-//    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-    [left addTarget:self action:@selector(leftBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:left];
-   
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-160, 44)];
-    titleLabel.text = @"历史报告";
-    titleLabel.textColor = [UIColor blackColor];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.font = [UIFont boldSystemFontOfSize:18];
-    self.navigationItem.titleView = titleLabel;
-    
-    
-}
-- (void)leftBarButtonItemPressed:(id)sender
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
 - (void)setupHeaderView
 {
     _headerBgView = [[UIView alloc] init];
@@ -133,7 +114,8 @@
     
     _headerBgView.layer.cornerRadius = 10.f;
     [_headerBgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.equalTo(self.view).mas_offset(15);
+        make.top.equalTo(self.navBarView.mas_bottom).mas_offset(15);
+        make.left.equalTo(self.view).mas_offset(15);
         make.right.equalTo(self.view).mas_offset(-15);
     }];
     

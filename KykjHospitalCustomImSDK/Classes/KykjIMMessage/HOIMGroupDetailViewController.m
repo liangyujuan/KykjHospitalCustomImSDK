@@ -24,11 +24,11 @@
 
 @interface HOIMGroupDetailViewController ()
 
-@property (nonatomic, strong) UIView *navBgView;
+@property (nonatomic, strong) UIView *navBarView;
+@property (nonatomic, strong) UIView *stateBgView;
 @property (nonatomic, strong) UIButton * leftButton;
 @property (nonatomic, strong) UIButton * rightButton;
 @property (nonatomic, strong) UILabel *titleLabel;
-
 @property (nonatomic, strong) UIView *bottomBgView;
 
 @property (nonatomic, strong) UILabel *consultCuntLabel;
@@ -58,8 +58,8 @@
 //    [self.navigationController.navigationBar lt_setBackgroundColor:[UIColor whiteColor]];
 //    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
-    self.navigationController.navigationBarHidden = YES;
-    [self setupNav];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+//    [self setupNav];
     [self scrollToBottomAnimated:YES];
     [self requestMemberWithSearchString:self.model.homeTel];
    
@@ -87,7 +87,7 @@
    
     
     
-    self.edgesForExtendedLayout = UIRectEdgeNone;
+//    self.edgesForExtendedLayout = UIRectEdgeNone;
 //    self.navigationController.navigationBar.translucent = NO;
     self.view.backgroundColor = colorBackground;
     
@@ -130,12 +130,12 @@
     if ([content respondsToSelector:@selector(extra)]) {
         NSString * extra = [content valueForKey:@"extra"];
         NSLog(@"extra==:%@",extra);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            @strongify(self)
-            [self setupNav];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            @strongify(self)
+//            [self setupNav];
 //            [self scrollToBottomAnimated:YES];
             
-        });
+//        });
         
     }
 }
@@ -146,23 +146,45 @@
 
 - (void)setupNav{
     
-//    self.titleLabel.textColor = [UIColor blackColor];
+    self.stateBgView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, StatuBarHeight)];
+    self.stateBgView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.stateBgView];
+    
+    self.navBarView = [[UIView alloc] initWithFrame:CGRectMake(0, StatuBarHeight, ScreenWidth, 44)];
+    self.navBarView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.navBarView];
+    
+    _leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 80, 44)];
+//    [left setImage:[UIImage imageNamed:@"arrow_left"] forState:UIControlStateNormal];
+    [_leftButton setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
+    [_leftButton addTarget:self action:@selector(leftBarButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.navBarView addSubview:_leftButton];
+    
+    
+    _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake((ScreenWidth-200)/2, 0, ScreenWidth-200, 44)];
+    _titleLabel.text = @"聊天室";
+    _titleLabel.textColor = [UIColor blackColor];
+    _titleLabel.textAlignment = NSTextAlignmentCenter;
+    _titleLabel.font = [UIFont boldSystemFontOfSize:18];
+    [self.navBarView addSubview:_titleLabel];
+    
+    _rightButton = [[UIButton alloc] initWithFrame:CGRectMake(ScreenWidth-100, 0, 100, 44)];
+//    [_right setImage:[UIImage imageNamed:@"M_setting_ic"] forState:UIControlStateNormal];
+    [_rightButton setTitle:@"历史报告" forState:UIControlStateNormal];
+    [_rightButton setTitleColor:RGB(1, 111, 255) forState:UIControlStateNormal];
+    _rightButton.titleLabel.font = [UIFont systemFontOfSize:14];
+    [_rightButton addTarget:self action:@selector(rightBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [self.navBarView addSubview:_rightButton];
     
 //    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.leftButton];
- 
 //
 //
-//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] style:UIBarButtonItemStylePlain target:nil action:@selector(leftBarButtonAction)];
-//    
-//    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] style:UIBarButtonItemStylePlain target:nil action:@selector(leftBarButtonAction)];
-    
 //    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightButton];
-////
+//
 //    self.navigationItem.titleView = self.titleLabel;
-//    self.title = @"聊天室";
-//    self.navigationItem.titleView.tintColor = [UIColor blackColor];
     
-    self.navBgView.hidden = NO;
+    
+    
 }
 
 - (void)leftBarButtonAction
@@ -246,7 +268,7 @@
     [self.chatSessionInputBarControl setHidden:YES];
     
     [self.conversationMessageCollectionView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view).mas_offset(NavStaHeight);
+        make.top.equalTo(self.navBarView.mas_bottom);
 //            make.bottom.equalTo(self.bottomListView.mas_top);
         make.bottom.equalTo(self.consultCuntLabel.mas_top).mas_offset(-20);
         make.left.right.equalTo(self.view);
@@ -881,94 +903,7 @@
 
         }];
 }
-- (UILabel*)titleLabel
-{
-    if (!_titleLabel) {
-        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-160, 44)];
-        _titleLabel.text = @"聊天室";
-        _titleLabel.textColor = [UIColor blackColor];
-        _titleLabel.textAlignment = NSTextAlignmentCenter;
-        _titleLabel.font = [UIFont boldSystemFontOfSize:18];
-        self.navigationItem.titleView = _titleLabel;
-    }
- 
-    return _titleLabel;
-    
-}
 
-- (UIView*)navBgView
-{
-    if (!_navBgView) {
-        _navBgView = [[UIView alloc] init];
-        _navBgView.backgroundColor = [UIColor whiteColor];
-        [self.view addSubview:_navBgView];
-        [_navBgView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.right.top.equalTo(self.view);
-            make.height.mas_equalTo(NavStaHeight);
-        }];
-        
-        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, StatuBarHeight, ScreenWidth-240, 44)];
-        _titleLabel.text = @"聊天室";
-        _titleLabel.textColor = [UIColor blackColor];
-        _titleLabel.textAlignment = NSTextAlignmentCenter;
-        _titleLabel.font = [UIFont boldSystemFontOfSize:18];
-        [_navBgView addSubview:_titleLabel];
-      
-        
-        _rightButton = [[UIButton alloc] initWithFrame:CGRectMake(ScreenWidth-100, StatuBarHeight, 95, 44)];
-    //    [_right setImage:[UIImage imageNamed:@"M_setting_ic"] forState:UIControlStateNormal];
-        [_rightButton setTitle:@"历史报告" forState:UIControlStateNormal];
-        [_rightButton setTitleColor:RGB(1, 111, 255) forState:UIControlStateNormal];
-        _rightButton.titleLabel.font = [UIFont systemFontOfSize:14];
-        [_rightButton addTarget:self action:@selector(rightBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
-        
-        _leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_leftButton setFrame:CGRectMake(0, StatuBarHeight, 75, 44)];
-        [_leftButton setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-
-        
-        [_leftButton addTarget:self action:@selector(leftBarButtonAction) forControlEvents:UIControlEventTouchUpInside];
-        
-        [_navBgView addSubview:_rightButton];
-        
-        [_navBgView addSubview:_leftButton];
-        
-    }
-    return _navBgView;
-}
-- (UIButton*)rightButton
-{
-    if (!_rightButton) {
-        _rightButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-    //    [_right setImage:[UIImage imageNamed:@"M_setting_ic"] forState:UIControlStateNormal];
-        [_rightButton setTitle:@"历史报告" forState:UIControlStateNormal];
-        [_rightButton setTitleColor:RGB(1, 111, 255) forState:UIControlStateNormal];
-        _rightButton.titleLabel.font = [UIFont systemFontOfSize:14];
-        [_rightButton addTarget:self action:@selector(rightBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
-//        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_rightButton];
-       
-    }
-   
-
-    return _rightButton;
-}
-- (UIButton*)leftButton
-{
-    if (!_leftButton) {
-        _leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_leftButton setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-
-        
-        [_leftButton addTarget:self action:@selector(leftBarButtonAction) forControlEvents:UIControlEventTouchUpInside];
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_leftButton];
-        [_leftButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(30, 44));
-        }];
-        
-    }
-
-    return _leftButton;
-}
 - (void)dealloc{
     [_cerView removeFromSuperview];
     _cerView = nil;

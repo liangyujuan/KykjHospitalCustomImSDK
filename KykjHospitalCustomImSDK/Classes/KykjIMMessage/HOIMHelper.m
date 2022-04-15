@@ -40,15 +40,17 @@ static NSString *const  kDefaultUserIconUrl = @"https://hlwyyv2.jkscw.com.cn/yst
 
 
 
-#ifdef HO_ENVIRONMENT_TEST
+//#ifdef HO_ENVIRONMENT_TEST
+//
+//static NSString *rongIMAppKey = @"pvxdm17jpwysr";
+//
+//#else
+//
+//static NSString *rongIMAppKey = @"pvxdm17jpwysr";
+//
+//#endif
 
-static NSString *rongIMAppKey = @"pvxdm17jpwysr";
-
-#else
-
-static NSString *rongIMAppKey = @"pvxdm17jpwysr";
-
-#endif
+static NSString *rongIMAppKey = @"uwd1c0sxukyz1";
 
 
 @interface HOIMHelper()<RCIMUserInfoDataSource>

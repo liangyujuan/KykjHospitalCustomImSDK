@@ -38,13 +38,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    self.title = @"报告详情";
+    self.title = @"诊断报告";
 //    self.edgesForExtendedLayout = UIRectEdgeNone;
 //
 //    self.navigationController.navigationBar.translucent = NO;
     self.view.backgroundColor = colorBackground;
-  
-    [self setupNav];
     
     [self setsubviews];
     
@@ -52,24 +50,7 @@
 
     // Do any additional setup after loading the view.
 }
-- (void)setupNav{
-    
-    UIButton * left = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-//    [left setImage:[KykjImToolkit getImageResourceForName:@"arrow_left"] forState:UIControlStateNormal];
-    [left addTarget:self action:@selector(leftBarButtonItemPressed:) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:left];
-   
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-160, 44)];
-    titleLabel.text = @"诊断报告";
-    titleLabel.textColor = [UIColor blackColor];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.font = [UIFont boldSystemFontOfSize:18];
-    self.navigationItem.titleView = titleLabel;
-    
-    
-}
-- (void)leftBarButtonItemPressed:(id)sender
+- (void)leftItemSelector
 {
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -96,7 +77,8 @@
         make.style(UITableViewStyleGrouped).backgroundColor(colorBackground).estimatedRowHeight(70).delegate(self).dataSource(self).separatorStyle(UITableViewCellSeparatorStyleNone).registerCell([DiagnosisPreviewCell class],@"DiagnosisPreviewCell").addToSuperView(self.view);
     }];
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.right.equalTo(self.view).priorityHigh();
+        make.top.equalTo(self.navBarView.mas_bottom);
+        make.left.right.equalTo(self.view);
         make.bottom.equalTo(self.view).mas_offset(-20);
     }];
 }

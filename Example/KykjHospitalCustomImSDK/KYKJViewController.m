@@ -7,7 +7,7 @@
 //
 
 #import "KYKJViewController.h"
-#import "TYMemberSearchViewController.h"
+#import "TYMemberSearchDetailViewController.h"
 
 @interface KYKJViewController ()
 
@@ -15,6 +15,11 @@
 
 @implementation KYKJViewController
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:YES];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
 - (void)viewDidLoad{
     [super viewDidLoad];
     self.title = @"测试";
@@ -34,8 +39,9 @@
 }
 - (void)tapAction
 {
-    TYMemberSearchViewController *vc = [[TYMemberSearchViewController alloc] init];
-  
+    TYMemberSearchDetailViewController *vc = [[TYMemberSearchDetailViewController alloc] init];
+    vc.searchString = @"320826198909270810";
+    
     [self.navigationController pushViewController:vc animated:YES];
 }
 - (void)didReceiveMemoryWarning

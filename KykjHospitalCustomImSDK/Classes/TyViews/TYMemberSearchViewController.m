@@ -161,7 +161,7 @@
         return;
     }
     _searchButton.enabled = NO;
-    [self requestMemberWithSearchString:_textfield.text];
+//    [self requestMemberWithSearchString:_textfield.text];
     
 }
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
@@ -209,55 +209,55 @@
     
 }
 
-- (void)requestMemberWithSearchString:(NSString*)searhString
-{
-    MBProgressHUDShowInThisView;
-    NSMutableDictionary *param = [NSMutableDictionary dictionary];
-    [param setObject:@"dzService" forKey:@"service"];
-    [param setObject:@"searchUserInfo" forKey:@"method"];
-    [param setObject:searhString forKey:@"homeTel"];
-    
-    @weakify(self)
-    [HttpOperationManager HTTP_POSTWithParameters:param showAlert:NO success:^(id responseObject) {
-      @strongify(self)
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        self.searchButton.enabled = YES;
-        if (responseObject!=nil) {
-
-//            system.TOKEN = getSafeString(responseObject[@"token"]);
-            if ([responseObject[@"result"] isEqualToString:@"success"]) {
-                TYMemberModel *temp = [[TYMemberModel alloc] init];
-                if (responseObject[@"rows"] != nil) {
-                    temp = [temp mj_setKeyValues:responseObject[@"rows"]];
-                    
-                    TYMemberSearchDetailViewController *vc = [[TYMemberSearchDetailViewController alloc] init];
-                    vc.model = temp;
-    //                vc.hidesBottomBarWhenPushed = YES;
-                    [self.navigationController pushViewController:vc animated:YES];
-                }
-                else{
-                    [LeafNotification showHint:@"未查询到会员信息！" yOffset:-ScreenHeight/2];
-                }
-            }else{
-                NSString *msgString = getSafeString(responseObject[@"info"]);
-                if (msgString.length > 0) {
-                    [LeafNotification showHint:msgString yOffset:-ScreenHeight/2];
-    //                [LeafNotification showInController:weakself withText:msgString];
-                }else
-                    [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:-ScreenHeight/2];
-    //                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
-            }
-     
-            
-        }
-    } failure:^(NSError *error) {
-        NSLog(@"error:%@",error.userInfo);
-        @strongify(self)
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        self.searchButton.enabled = YES;
-        [LeafNotification showHint:@"网络连接失败" yOffset:-ScreenHeight/2];
-    }];
-}
+//- (void)requestMemberWithSearchString:(NSString*)searhString
+//{
+//    MBProgressHUDShowInThisView;
+//    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+//    [param setObject:@"dzService" forKey:@"service"];
+//    [param setObject:@"searchUserInfo" forKey:@"method"];
+//    [param setObject:searhString forKey:@"homeTel"];
+//
+//    @weakify(self)
+//    [HttpOperationManager HTTP_POSTWithParameters:param showAlert:NO success:^(id responseObject) {
+//      @strongify(self)
+//        [MBProgressHUD hideHUDForView:self.view animated:YES];
+//        self.searchButton.enabled = YES;
+//        if (responseObject!=nil) {
+//
+////            system.TOKEN = getSafeString(responseObject[@"token"]);
+//            if ([responseObject[@"result"] isEqualToString:@"success"]) {
+//                TYMemberModel *temp = [[TYMemberModel alloc] init];
+//                if (responseObject[@"rows"] != nil) {
+//                    temp = [temp mj_setKeyValues:responseObject[@"rows"]];
+//
+//                    TYMemberSearchDetailViewController *vc = [[TYMemberSearchDetailViewController alloc] init];
+//                    vc.model = temp;
+//    //                vc.hidesBottomBarWhenPushed = YES;
+//                    [self.navigationController pushViewController:vc animated:YES];
+//                }
+//                else{
+//                    [LeafNotification showHint:@"未查询到会员信息！" yOffset:-ScreenHeight/2];
+//                }
+//            }else{
+//                NSString *msgString = getSafeString(responseObject[@"info"]);
+//                if (msgString.length > 0) {
+//                    [LeafNotification showHint:msgString yOffset:-ScreenHeight/2];
+//    //                [LeafNotification showInController:weakself withText:msgString];
+//                }else
+//                    [LeafNotification showHint:@"系统错误，请稍后再试！" yOffset:-ScreenHeight/2];
+//    //                [LeafNotification showInController:weakself withText:@"系统错误，请稍后再试！"];
+//            }
+//
+//
+//        }
+//    } failure:^(NSError *error) {
+//        NSLog(@"error:%@",error.userInfo);
+//        @strongify(self)
+//        [MBProgressHUD hideHUDForView:self.view animated:YES];
+//        self.searchButton.enabled = YES;
+//        [LeafNotification showHint:@"网络连接失败" yOffset:-ScreenHeight/2];
+//    }];
+//}
 
 #pragma mark- UIKeyboardWillChangeFrameNotification
 - (void)keyboardWillChangeFrame:(NSNotification *)notification

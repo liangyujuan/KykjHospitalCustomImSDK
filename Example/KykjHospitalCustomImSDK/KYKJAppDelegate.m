@@ -18,14 +18,14 @@
 {
     // Override point for customization after application launch.
     
-    [self initThirdPartWithOptions:launchOptions];
+//    [self initThirdPartWithOptions:launchOptions];
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     [[UINavigationBar appearance] setBackgroundColor:[UIColor colorWithRed:249/255.f green:249/255.f blue:249/255.f alpha:1]];
     _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _window.backgroundColor = [UIColor whiteColor];
     
-    TYMemberSearchViewController *vc = [[TYMemberSearchViewController alloc] init];
+    KYKJViewController *vc = [[KYKJViewController alloc] init];
     BaseNavigationController *nav = [[BaseNavigationController alloc] initWithRootViewController:vc];
 
     nav.title = @"健康问诊";
@@ -48,7 +48,7 @@
 
 - (void)initThirdPartWithOptions:(NSDictionary *)launchOptions{
 // 初始化融云的SDK
-[[HOIMHelper shareInstance] initWithAppKey:@"pvxdm17jpwysr"];
+[[HOIMHelper shareInstance] initWithAppKey:@"uwd1c0sxukyz1"];
 [[HOIMHelper shareInstance] rongYunConfig:launchOptions timSDKAppId:1400645504 withDelegate:self];
 
 }

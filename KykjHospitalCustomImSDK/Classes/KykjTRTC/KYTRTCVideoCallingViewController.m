@@ -166,6 +166,12 @@ static const NSInteger maxRemoteUserNum = 9;
     }];
     _collectionView.hidden = NO;
     
+    if (@available(iOS 11.0, *)) {
+        self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    } else {
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
+    
     _minimizeButton = [UIButton makeButton:^(ButtonMaker * _Nonnull make) {
         make.titleForState(@"缩放",UIControlStateNormal).titleColorForState([UIColor whiteColor],UIControlStateNormal).titleFont([UIFont boldSystemFontOfSize:20]).imageForState([KykjImToolkit getImageResourceForName:@"video_calling_miniz"],UIControlStateNormal).addAction(self,@selector(minimizAction:),UIControlEventTouchUpInside).addToSuperView(self.view);
     }];
