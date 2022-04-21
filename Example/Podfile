@@ -19,7 +19,7 @@ target 'KykjHospitalCustomImSDK_Example' do
 
 #  pod 'KykjHospitalCustomImSDK', :git => 'https://gitee.com/liangyujuan/kykj-hospital-custom-im-sdk' , :tag => '1.0.0'
 
-#pod 'KykjHospitalCustomImSDK', '~> 1.0.0'
+#pod 'KykjHospitalCustomImSDK', '~> 1.0.7'
 
   target 'KykjHospitalCustomImSDK_Tests' do
     inherit! :search_paths

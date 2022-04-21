@@ -75,7 +75,8 @@
     [manager.securityPolicy setValidatesDomainName:YES];
     
     __weak typeof(manager) weakmanger = manager;
-    [manager GET:url parameters:nil headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    
+    [manager GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary* responseData = (NSDictionary*)responseObject;
         if (showLog) {
             NSLog(@"responseData:%@",responseData);
@@ -108,6 +109,40 @@
                 //回调函数
             failure(error);
         }];
+    
+//    [manager GET:url parameters:nil headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//        NSDictionary* responseData = (NSDictionary*)responseObject;
+//        if (showLog) {
+//            NSLog(@"responseData:%@",responseData);
+//        }
+//            //如果responseData为nil，服务器端返回有错
+//        if (!responseData && show) {
+//            UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
+//                                                                  message:@"抱歉，数据出错~"
+//                                                                 delegate:nil
+//                                                        cancelButtonTitle:@"确定"
+//                                                        otherButtonTitles:nil];
+//            [promptAlert show];
+//            return;
+//        }
+//        success(responseData);
+//        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//            if (!weakmanger.reachabilityManager.isReachable && show) {
+//
+//                UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
+//                                                                      message:@"网络出错"
+//                                                                     delegate:nil
+//                                                            cancelButtonTitle:@"确定"
+//                                                            otherButtonTitles:nil];
+//                [promptAlert show];
+//            }
+//                //打印错误数据
+//            if (error) {
+//                NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
+//            }
+//                //回调函数
+//            failure(error);
+//        }];
 //    __weak typeof(manager) weakmanger = manager;
 //    [manager GET:url parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
 //        NSDictionary* responseData = (NSDictionary*)responseObject;
@@ -177,50 +212,11 @@
     }
     __weak typeof(manager) weakmanger = manager;
     
-    [manager POST:tail parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary* responseData = (NSDictionary*)responseObject;
-//        NSLog(@"======responseObject:%@",responseObject);
-        if (isNeed) {
-            responseData = [StringUtils JsonDataWithmd5BaseData:responseData];
-        }
-        if (showLog) {
-            NSLog(@"\n【%@】 responseData:%@",params[@"method"],responseData);
-        }
-            //如果responseData为nil，服务器端返回有错
-        if (!responseData && show) {
-            UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
-                                                                  message:@"抱歉，数据出错~"
-                                                                 delegate:nil
-                                                        cancelButtonTitle:@"确定"
-                                                        otherButtonTitles:nil];
-            [promptAlert show];
-            return;
-        }
-        success(responseData);
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        //检查网络是否链接
-    if (!weakmanger.reachabilityManager.isReachable && show) {
-        
-        UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
-                                                              message:@"网络出错"
-                                                             delegate:nil
-                                                    cancelButtonTitle:@"确定"
-                                                    otherButtonTitles:nil];
-        [promptAlert show];
-    }
-        //打印错误数据
-    if (error) {
-        NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
-    }
-        //回调函数
-    failure(error);
-    }];
-    
-//    [manager POST:tail parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+//    [manager POST:tail parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
 //        NSDictionary* responseData = (NSDictionary*)responseObject;
-//        NSLog(@"======responseObject:%@",responseObject);
+////        NSLog(@"======responseObject:%@",responseObject);
 //        if (isNeed) {
-////            responseData = [StringUtils JsonDataWithmd5BaseData:responseData];
+//            responseData = [StringUtils JsonDataWithmd5BaseData:responseData];
 //        }
 //        if (showLog) {
 //            NSLog(@"\n【%@】 responseData:%@",params[@"method"],responseData);
@@ -237,23 +233,62 @@
 //        }
 //        success(responseData);
 //    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//            //检查网络是否链接
-//        if (!weakmanger.reachabilityManager.isReachable && show) {
+//        //检查网络是否链接
+//    if (!weakmanger.reachabilityManager.isReachable && show) {
 //
-//            UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
-//                                                                  message:@"网络出错"
-//                                                                 delegate:nil
-//                                                        cancelButtonTitle:@"确定"
-//                                                        otherButtonTitles:nil];
-//            [promptAlert show];
-//        }
-//            //打印错误数据
-//        if (error) {
-//            CXTLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
-//        }
-//            //回调函数
-//        failure(error);
+//        UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
+//                                                              message:@"网络出错"
+//                                                             delegate:nil
+//                                                    cancelButtonTitle:@"确定"
+//                                                    otherButtonTitles:nil];
+//        [promptAlert show];
+//    }
+//        //打印错误数据
+//    if (error) {
+//        NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
+//    }
+//        //回调函数
+//    failure(error);
 //    }];
+    
+    [manager POST:tail parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+        NSDictionary* responseData = (NSDictionary*)responseObject;
+        NSLog(@"======responseObject:%@",responseObject);
+        if (isNeed) {
+//            responseData = [StringUtils JsonDataWithmd5BaseData:responseData];
+        }
+        if (showLog) {
+            NSLog(@"\n【%@】 responseData:%@",params[@"method"],responseData);
+        }
+            //如果responseData为nil，服务器端返回有错
+        if (!responseData && show) {
+            UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
+                                                                  message:@"抱歉，数据出错~"
+                                                                 delegate:nil
+                                                        cancelButtonTitle:@"确定"
+                                                        otherButtonTitles:nil];
+            [promptAlert show];
+            return;
+        }
+        success(responseData);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            //检查网络是否链接
+        if (!weakmanger.reachabilityManager.isReachable && show) {
+
+            UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
+                                                                  message:@"网络出错"
+                                                                 delegate:nil
+                                                        cancelButtonTitle:@"确定"
+                                                        otherButtonTitles:nil];
+            [promptAlert show];
+        }
+            //打印错误数据
+        if (error) {
+            NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
+        }
+            //回调函数
+        failure(error);
+    }];
 }
 
 + (void)HTTP_POSTHaiNanLoginWithParameters:(id)parameters
@@ -283,44 +318,7 @@
     
     __weak typeof(manager) weakmanger = manager;
     
-    [manager POST:url parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary* responseData = (NSDictionary*)responseObject;
-        if (isNeed) {
-//            responseData = [StringUtils JsonDataWithmd5BaseData:responseObject];
-        }
-        if (showLog) {
-            NSLog(@"\n【%@】 responseData:%@",params[@"method"],responseData);
-        }
-            //如果responseData为nil，服务器端返回有错
-        if (!responseData && show) {
-            UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
-                                                                  message:@"抱歉，数据出错~"
-                                                                 delegate:nil
-                                                        cancelButtonTitle:@"确定"
-                                                        otherButtonTitles:nil];
-            [promptAlert show];
-            return;
-        }
-        success(responseData);
-        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            if (!weakmanger.reachabilityManager.isReachable && show) {
-
-                UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
-                                                                      message:@"网络出错"
-                                                                     delegate:nil
-                                                            cancelButtonTitle:@"确定"
-                                                            otherButtonTitles:nil];
-                [promptAlert show];
-            }
-                //打印错误数据
-            if (error) {
-                NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
-            }
-                //回调函数
-            failure(error);
-        }];
-    
-//    [manager POST:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+//    [manager POST:url parameters:parameters headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
 //        NSDictionary* responseData = (NSDictionary*)responseObject;
 //        if (isNeed) {
 ////            responseData = [StringUtils JsonDataWithmd5BaseData:responseObject];
@@ -339,24 +337,61 @@
 //            return;
 //        }
 //        success(responseData);
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//            //检查网络是否链接
-//        if (!weakmanger.reachabilityManager.isReachable && show) {
+//        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//            if (!weakmanger.reachabilityManager.isReachable && show) {
 //
-//            UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
-//                                                                  message:@"网络出错"
-//                                                                 delegate:nil
-//                                                        cancelButtonTitle:@"确定"
-//                                                        otherButtonTitles:nil];
-//            [promptAlert show];
-//        }
-//            //打印错误数据
-//        if (error) {
-//            NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
-//        }
-//            //回调函数
-//        failure(error);
-//    }];
+//                UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
+//                                                                      message:@"网络出错"
+//                                                                     delegate:nil
+//                                                            cancelButtonTitle:@"确定"
+//                                                            otherButtonTitles:nil];
+//                [promptAlert show];
+//            }
+//                //打印错误数据
+//            if (error) {
+//                NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
+//            }
+//                //回调函数
+//            failure(error);
+//        }];
+    
+    [manager POST:url parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+        NSDictionary* responseData = (NSDictionary*)responseObject;
+        if (isNeed) {
+//            responseData = [StringUtils JsonDataWithmd5BaseData:responseObject];
+        }
+        if (showLog) {
+            NSLog(@"\n【%@】 responseData:%@",params[@"method"],responseData);
+        }
+            //如果responseData为nil，服务器端返回有错
+        if (!responseData && show) {
+            UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
+                                                                  message:@"抱歉，数据出错~"
+                                                                 delegate:nil
+                                                        cancelButtonTitle:@"确定"
+                                                        otherButtonTitles:nil];
+            [promptAlert show];
+            return;
+        }
+        success(responseData);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            //检查网络是否链接
+        if (!weakmanger.reachabilityManager.isReachable && show) {
+
+            UIAlertView *promptAlert = [[UIAlertView alloc] initWithTitle:nil
+                                                                  message:@"网络出错"
+                                                                 delegate:nil
+                                                        cancelButtonTitle:@"确定"
+                                                        otherButtonTitles:nil];
+            [promptAlert show];
+        }
+            //打印错误数据
+        if (error) {
+            NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
+        }
+            //回调函数
+        failure(error);
+    }];
 }
 
 +(void)uploadImageWithData:(NSData *)data
@@ -382,45 +417,45 @@
     NSString * fileName = [NSString stringWithFormat:@"%li",time];
     NSString * url = [NSString stringWithFormat:@"%@/ystresource/img_upload_json.jsp?dirtype=staff",serverHttpImageBase_URL];
     
-    [manager POST:url parameters:nil headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-        [datas enumerateObjectsUsingBlock:^(NSData * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            NSString * fileNameStr = [NSString stringWithFormat:@"%@_%li.png",fileName,idx];
-            [formData appendPartWithFileData:obj name:@"image" fileName:fileNameStr mimeType:@"image/jpeg"];
-        }];
-        } progress:^(NSProgress * _Nonnull uploadProgress) {
-            
-        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            NSDictionary *dict=[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
-            NSLog(@"responseData:%@",dict);
-            if (success)success(dict);
-        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            //打印错误数据
-            if (error) {
-                NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
-            }
-            if (failure)failure(error);
-        }];
-    
-//    [manager POST:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-//
+//    [manager POST:url parameters:nil headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
 //        [datas enumerateObjectsUsingBlock:^(NSData * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
 //            NSString * fileNameStr = [NSString stringWithFormat:@"%@_%li.png",fileName,idx];
 //            [formData appendPartWithFileData:obj name:@"image" fileName:fileNameStr mimeType:@"image/jpeg"];
 //        }];
+//        } progress:^(NSProgress * _Nonnull uploadProgress) {
 //
-//    } progress:^(NSProgress * _Nonnull uploadProgress) {
-//
-//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        NSDictionary *dict=[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
-//        NSLog(@"responseData:%@",dict);
-//        if (success)success(dict);
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        //打印错误数据
-//        if (error) {
-//            NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
-//        }
-//        if (failure)failure(error);
-//    }];
+//        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+//            NSDictionary *dict=[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
+//            NSLog(@"responseData:%@",dict);
+//            if (success)success(dict);
+//        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+//            //打印错误数据
+//            if (error) {
+//                NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
+//            }
+//            if (failure)failure(error);
+//        }];
+    
+    [manager POST:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+
+        [datas enumerateObjectsUsingBlock:^(NSData * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSString * fileNameStr = [NSString stringWithFormat:@"%@_%li.png",fileName,idx];
+            [formData appendPartWithFileData:obj name:@"image" fileName:fileNameStr mimeType:@"image/jpeg"];
+        }];
+
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *dict=[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
+        NSLog(@"responseData:%@",dict);
+        if (success)success(dict);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        //打印错误数据
+        if (error) {
+            NSLog(@"ERROR CODE:%ld INFO:%@", error.code, error.userInfo);
+        }
+        if (failure)failure(error);
+    }];
 }
 
 //+ (void)uploadCAImagesuccess:(void (^)(id responseObject))success

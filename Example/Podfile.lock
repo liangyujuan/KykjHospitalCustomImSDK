@@ -1,29 +1,29 @@
 PODS:
-  - AFNetworking (4.0.1):
-    - AFNetworking/NSURLSession (= 4.0.1)
-    - AFNetworking/Reachability (= 4.0.1)
-    - AFNetworking/Security (= 4.0.1)
-    - AFNetworking/Serialization (= 4.0.1)
-    - AFNetworking/UIKit (= 4.0.1)
-  - AFNetworking/NSURLSession (4.0.1):
+  - AFNetworking (3.2.1):
+    - AFNetworking/NSURLSession (= 3.2.1)
+    - AFNetworking/Reachability (= 3.2.1)
+    - AFNetworking/Security (= 3.2.1)
+    - AFNetworking/Serialization (= 3.2.1)
+    - AFNetworking/UIKit (= 3.2.1)
+  - AFNetworking/NSURLSession (3.2.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (4.0.1)
-  - AFNetworking/Security (4.0.1)
-  - AFNetworking/Serialization (4.0.1)
-  - AFNetworking/UIKit (4.0.1):
+  - AFNetworking/Reachability (3.2.1)
+  - AFNetworking/Security (3.2.1)
+  - AFNetworking/Serialization (3.2.1)
+  - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
   - IQKeyboardManager (6.3.0)
-  - KykjHospitalCustomImSDK (1.0.7):
-    - AFNetworking
-    - IQKeyboardManager
-    - Masonry
-    - MBProgressHUD
-    - MJRefresh
+  - KykjHospitalCustomImSDK (1.0.8):
+    - AFNetworking (~> 3.2.1)
+    - IQKeyboardManager (~> 6.3.0)
+    - Masonry (~> 1.1.0)
+    - MBProgressHUD (~> 1.1.0)
+    - MJRefresh (~> 3.2.0)
     - RongCloudIM/IMKit (~> 2.10.4)
     - RongCloudIM/IMLib (~> 2.10.4)
-    - SDWebImage
+    - SDWebImage (~> 5.12.3)
     - TXIMSDK_iOS
     - TXLiteAVSDK_TRTC (~> 8.3.9901)
   - Masonry (1.1.0)
@@ -58,9 +58,9 @@ EXTERNAL SOURCES:
     :path: "../KykjHospitalCustomImSDK.podspec"
 
 SPEC CHECKSUMS:
-  AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
+  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   IQKeyboardManager: 2ca9d64893247556f53523dcd8d78641f0ba7c23
-  KykjHospitalCustomImSDK: 7611e0923136ecb2a2902b5b5bc2ad258de2d988
+  KykjHospitalCustomImSDK: b4ee01beadcd49a537f09403d728362eaa24bd5b
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   MJRefresh: 2b1214a2dc8f4df4c5dcb028ea2ad4e245425fb7
@@ -69,6 +69,6 @@ SPEC CHECKSUMS:
   TXIMSDK_iOS: 4016cc84a61db57fc8ca024becf47ad229bbeef1
   TXLiteAVSDK_TRTC: 68d1565b1d3a4b0abc0388b15c3cec431c7c1a20
 
-PODFILE CHECKSUM: 94a33325d030d747705906091f4a433c13e2b886
+PODFILE CHECKSUM: 692087ba9474f04e3fb5b275cbb163939d9b3f8e
 
 COCOAPODS: 1.11.2

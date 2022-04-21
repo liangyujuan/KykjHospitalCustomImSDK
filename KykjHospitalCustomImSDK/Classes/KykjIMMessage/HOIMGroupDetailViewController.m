@@ -61,7 +61,7 @@
     [self.navigationController setNavigationBarHidden:YES animated:YES];
 //    [self setupNav];
     [self scrollToBottomAnimated:YES];
-    [self requestMemberWithSearchString:self.model.homeTel];
+    [self requestMemberWithSearchString:self.model.idCard];
    
 }
 
@@ -575,7 +575,10 @@
 
     [param setObject:getSafeString(_model.nameCn) forKey:@"userName"];
 
-    [param setObject:getSafeString(_model.homeTel) forKey:@"userPhone"];
+    if (![KykjImToolkit isStringBlank:_model.homeTel]) {
+        [param setObject:getSafeString(_model.homeTel) forKey:@"userPhone"];
+    }
+    
 
     [param setObject:RegWayCode forKey:@"regWayCode"];
 

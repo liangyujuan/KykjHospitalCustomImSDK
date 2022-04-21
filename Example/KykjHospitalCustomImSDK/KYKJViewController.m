@@ -40,7 +40,7 @@
 - (void)tapAction
 {
     TYMemberSearchDetailViewController *vc = [[TYMemberSearchDetailViewController alloc] init];
-    vc.searchString = @"320826198909270810";
+    vc.searchString = @"320113194203052813";
     
     [self.navigationController pushViewController:vc animated:YES];
 }

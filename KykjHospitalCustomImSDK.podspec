@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'KykjHospitalCustomImSDK'
-  s.version          = '1.0.7'
+  s.version          = '1.0.8'
   s.summary          = 'KykjHospitalCustomImSDK is audio frequency and video sdk'
 
 # This description is used to generate tags and improve search results.
@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'liangyujuan' => '18730231873@163.com' }
-  s.source           = { :git => 'https://github.com/liangyujuan/KykjHospitalCustomImSDK.git', :tag => '1.0.7'}
+  s.source           = { :git => 'https://github.com/liangyujuan/KykjHospitalCustomImSDK.git', :tag => '1.0.8'}
 #s.source           = { :git => '/Users/liangyujuan/Documents/KykjHospitalCustomImSDK', :tag => '1.0.0'}
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
 #  'KykjHospitalCustomImSDK' => ['KykjHospitalCustomImSDK/KykjHospitalCustomImSDK.bundle']
 #}
 
-   s.public_header_files = 'KykjHospitalCustomImSDK/Classes/Header/*.h'
+   s.public_header_files = 'KykjHospitalCustomImSDK/Classes/**/*.h'
 
 #   s.public_header_files = 'Pod/Classes/**/*.h'
 
@@ -55,18 +55,19 @@ Pod::Spec.new do |s|
    s.dependency 'TXLiteAVSDK_TRTC', '~> 8.3.9901'
    s.dependency 'TXIMSDK_iOS'
 
-#   s.dependency 'Masonry', '~>1.1.0'
+   s.dependency 'Masonry', '~>1.1.0'
+   s.dependency 'AFNetworking', '~>3.2.1'
 #   s.dependency 'AFNetworking', '~>4.0.1'
-#   s.dependency 'MBProgressHUD', '~>1.1.0'
-#   s.dependency 'MJRefresh', '~>3.2.0'
-#   s.dependency 'IQKeyboardManager', '~>6.3.0'
-#   s.dependency 'SDWebImage', '~>5.12.3'
+   s.dependency 'MBProgressHUD', '~>1.1.0'
+   s.dependency 'MJRefresh', '~>3.2.0'
+   s.dependency 'IQKeyboardManager', '~>6.3.0'
+   s.dependency 'SDWebImage', '~>5.12.3'
 
-s.dependency 'Masonry'
-s.dependency 'AFNetworking'
-s.dependency 'MBProgressHUD'
-s.dependency 'MJRefresh'
-s.dependency 'IQKeyboardManager'
-s.dependency 'SDWebImage'
+#s.dependency 'Masonry'
+#s.dependency 'AFNetworking'
+#s.dependency 'MBProgressHUD'
+#s.dependency 'MJRefresh'
+#s.dependency 'IQKeyboardManager'
+#s.dependency 'SDWebImage'
 
 end
